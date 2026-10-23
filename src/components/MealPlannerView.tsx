@@ -1,26 +1,91 @@
 import React, { useState } from 'react';
 import { useHousehold } from '../context/HouseholdContext';
-import { MealPlanItem, Recipe } from '../types';
-import { Plus, BookOpen, Clock, Tag, X, Check, Edit2 } from 'lucide-react';
+import { MealPlanItem, Recipe, CuisineType } from '../types';
+import { 
+  Plus, 
+  Clock, 
+  Tag, 
+  X, 
+  Check, 
+  Edit2, 
+  Utensils, 
+  CheckCircle2, 
+  AlertCircle, 
+  ShoppingCart, 
+  Calendar 
+} from 'lucide-react';
 
 export const MealPlannerView: React.FC = () => {
-  const { mealPlan, recipes, updateMeal, addRecipe } = useHousehold();
+  const { 
+    mealPlan, 
+    recipes, 
+    fridgeItems, 
+    updateMeal, 
+    addRecipe, 
+    assignRecipeToMeal, 
+    addShoppingItem 
+  } = useHousehold();
   
   const [editingMeal, setEditingMeal] = useState<MealPlanItem | null>(null);
   const [editTitle, setEditTitle] = useState('');
   const [editNotes, setEditNotes] = useState('');
 
+  // Cuisine Selector state (Defaults to Indonesian)
+  const [selectedCuisine, setSelectedCuisine] = useState<CuisineType>('Indonesian');
+
+  // Scheduling Modal State
+  const [schedulingRecipe, setSchedulingRecipe] = useState<Recipe | null>(null);
+  const [targetDay, setTargetDay] = useState<MealPlanItem['day']>(() => {
+    const dayNames: MealPlanItem['day'][] = [
+      'Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'
+    ];
+    return dayNames[new Date().getDay()];
+  });
+  const [targetMealType, setTargetMealType] = useState<MealPlanItem['mealType']>('dinner');
+  const [successToast, setSuccessToast] = useState<string | null>(null);
+
   // New Recipe Modal State
   const [showRecipeModal, setShowRecipeModal] = useState(false);
   const [recipeTitle, setRecipeTitle] = useState('');
-  const [recipeCategory, setRecipeCategory] = useState<Recipe['category']>('Indonesian');
-  const [recipeTime, setRecipeTime] = useState(30);
+  const [recipeCuisine, setRecipeCuisine] = useState<CuisineType>('Indonesian');
+  const [recipeTime, setRecipeTime] = useState(25);
   const [recipeIngredients, setRecipeIngredients] = useState('');
   const [recipeTags, setRecipeTags] = useState('');
 
   const days: MealPlanItem['day'][] = [
     'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'
   ];
+
+  const cuisines: { id: CuisineType; label: string; flag: string }[] = [
+    { id: 'Indonesian', label: 'Indonesian', flag: '🇮🇩' },
+    { id: 'Japanese', label: 'Japanese', flag: '🇯🇵' },
+    { id: 'Italian', label: 'Italian', flag: '🇮🇹' },
+    { id: 'Chinese', label: 'Chinese', flag: '🇨🇳' },
+    { id: 'Mexican', label: 'Mexican', flag: '🇲🇽' },
+    { id: 'Indian', label: 'Indian', flag: '🇮🇳' },
+  ];
+
+  // Check if an ingredient is currently available ("Masih Ada") in fridgeItems
+  const checkIngredientInStock = (ingName: string) => {
+    return fridgeItems.some(f => {
+      if (!f.isAvailable) return false;
+      const fName = f.name.toLowerCase();
+      const target = ingName.toLowerCase();
+      return fName.includes(target) || target.includes(fName) ||
+        target.split(' ').some(w => w.length >= 4 && fName.includes(w)) ||
+        fName.split(' ').some(w => w.length >= 4 && target.includes(w));
+    });
+  };
+
+  // Filter recipes by selected cuisine
+  const cuisineRecipes = recipes.filter(r => r.cuisine === selectedCuisine);
+
+  // Calculate readiness count per cuisine
+  const getCuisineStats = (cuisine: CuisineType) => {
+    const list = recipes.filter(r => r.cuisine === cuisine);
+    const ready = list.filter(r => r.ingredients.every(checkIngredientInStock)).length;
+    return { total: list.length, ready };
+  };
 
   const handleEditClick = (item: MealPlanItem) => {
     setEditingMeal(item);
@@ -41,7 +106,7 @@ export const MealPlannerView: React.FC = () => {
 
     addRecipe({
       title: recipeTitle.trim(),
-      category: recipeCategory,
+      cuisine: recipeCuisine,
       cookTimeMins: Number(recipeTime) || 30,
       ingredients: recipeIngredients.split(',').map(s => s.trim()).filter(Boolean),
       tags: recipeTags.split(',').map(s => s.trim()).filter(Boolean)
@@ -53,19 +118,57 @@ export const MealPlannerView: React.FC = () => {
     setShowRecipeModal(false);
   };
 
+  const handleConfirmSchedule = () => {
+    if (schedulingRecipe) {
+      assignRecipeToMeal(schedulingRecipe.title, targetDay, targetMealType);
+      setSuccessToast(`Jadwal diperbarui: ${schedulingRecipe.title} untuk ${targetDay} (${targetMealType.toUpperCase()})`);
+      setSchedulingRecipe(null);
+      setTimeout(() => setSuccessToast(null), 3500);
+    }
+  };
+
+  const handleAddMissingToShopping = (ingredientName: string) => {
+    addShoppingItem({
+      title: ingredientName,
+      category: 'Groceries',
+      quantity: '1 pack',
+      urgency: 'routine'
+    });
+    setSuccessToast(`Ditambahkan ke To-Buy list: ${ingredientName}`);
+    setTimeout(() => setSuccessToast(null), 3000);
+  };
+
   return (
-    <div className="space-y-6">
-      {/* Top action row */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-4 rounded-2xl border border-slate-200">
+    <div className="space-y-6 relative">
+      {/* FLOATING SUCCESS TOAST */}
+      {successToast && (
+        <div className="fixed bottom-6 right-6 z-50 animate-bounce sm:animate-none transition-all">
+          <div className="bg-slate-900 text-white text-xs font-semibold px-4 py-3 rounded-2xl shadow-2xl border border-slate-700 flex items-center gap-3 backdrop-blur-md">
+            <div className="w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0">
+              <CheckCircle2 className="w-4 h-4" />
+            </div>
+            <span className="max-w-xs">{successToast}</span>
+            <button 
+              onClick={() => setSuccessToast(null)}
+              className="text-slate-400 hover:text-white ml-1 p-0.5"
+            >
+              <X className="w-3.5 h-3.5" />
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Top Header Row */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
         <div>
           <h3 className="font-bold text-slate-800">Weekly Meal Calendar</h3>
-          <p className="text-xs text-slate-500">Plan out meals to automate grocery shopping and eliminate daily cooking stress</p>
+          <p className="text-xs text-slate-500">Plan out breakfast, lunch, and dinner. Click any slot to edit or pick from menu ideas below.</p>
         </div>
         <button
           onClick={() => setShowRecipeModal(true)}
-          className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-semibold flex items-center gap-2 shadow-sm shrink-0"
+          className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-semibold flex items-center gap-1.5 shadow-sm shrink-0 self-start sm:self-auto transition"
         >
-          <Plus className="w-4 h-4" /> Add Favorite Recipe
+          <Plus className="w-4 h-4" /> Add Recipe
         </button>
       </div>
 
@@ -112,56 +215,238 @@ export const MealPlannerView: React.FC = () => {
         })}
       </div>
 
-      {/* Recipe Box Section */}
-      <div className="bg-white rounded-2xl p-5 border border-slate-200">
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center gap-2">
-            <BookOpen className="w-5 h-5 text-emerald-600" />
-            <h3 className="font-bold text-slate-800">Favorite Family Recipes & Staples</h3>
+      {/* CUISINE-BASED MENU IDEAS POWERED BY FRIDGE STOCK */}
+      <div className="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-slate-100">
+          <div>
+            <div className="flex items-center gap-2">
+              <Utensils className="w-5 h-5 text-emerald-600" />
+              <h4 className="font-bold text-slate-900 text-base">Ide Menu Masakan Berdasarkan Stok Kulkas</h4>
+            </div>
+            <p className="text-xs text-slate-500 mt-0.5">
+              Menu yang semua bahannya <span className="text-emerald-700 font-semibold">Masih Ada</span> bisa langsung dijadwalkan. Menu dengan bahan habis otomatis disabled.
+            </p>
           </div>
-          <span className="text-xs text-slate-400">{recipes.length} saved recipes</span>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {recipes.map(recipe => (
-            <div key={recipe.id} className="p-4 rounded-xl border border-slate-200/80 bg-slate-50/50 hover:bg-white hover:shadow-sm transition">
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-semibold px-2 py-0.5 rounded bg-slate-200 text-slate-700">
-                  {recipe.category}
+        {/* Cuisine Selector Tabs */}
+        <div className="flex items-center gap-2 overflow-x-auto pb-1">
+          {cuisines.map(c => {
+            const { ready, total } = getCuisineStats(c.id);
+            const isSelected = selectedCuisine === c.id;
+
+            return (
+              <button
+                key={c.id}
+                onClick={() => setSelectedCuisine(c.id)}
+                className={`text-xs px-4 py-2 rounded-xl font-semibold whitespace-nowrap transition flex items-center gap-1.5 ${
+                  isSelected
+                    ? 'bg-slate-900 text-white shadow-sm'
+                    : 'bg-slate-50 text-slate-600 hover:bg-slate-100 hover:text-slate-900'
+                }`}
+              >
+                <span>{c.flag} {c.label}</span>
+                <span className={`text-[10px] px-1.5 py-0.2 rounded-full font-bold ${
+                  isSelected ? 'bg-slate-700 text-white' : 'bg-slate-200 text-slate-600'
+                }`}>
+                  {ready}/{total} Siap
                 </span>
-                <span className="text-xs text-slate-400 flex items-center gap-1">
-                  <Clock className="w-3 h-3" /> {recipe.cookTimeMins} mins
-                </span>
-              </div>
-              <h4 className="font-bold text-slate-800 mt-2 text-sm">{recipe.title}</h4>
-              
-              <div className="mt-3">
-                <p className="text-[11px] font-semibold text-slate-500 uppercase tracking-wide">Key Ingredients:</p>
-                <div className="flex flex-wrap gap-1 mt-1">
-                  {recipe.ingredients.slice(0, 4).map((ing, i) => (
-                    <span key={i} className="text-[10px] bg-white border border-slate-200 px-1.5 py-0.5 rounded text-slate-600">
-                      {ing}
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Recipe Cards Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 pt-1">
+          {cuisineRecipes.map(recipe => {
+            const missingIngredients = recipe.ingredients.filter(ing => !checkIngredientInStock(ing));
+            const isAllAvailable = missingIngredients.length === 0;
+
+            return (
+              <div
+                key={recipe.id}
+                className={`p-4 rounded-2xl border transition-all duration-200 flex flex-col justify-between ${
+                  isAllAvailable
+                    ? 'bg-white border-emerald-300 ring-1 ring-emerald-100 shadow-sm hover:shadow-md'
+                    : 'bg-slate-50/80 border-slate-200 border-dashed opacity-55'
+                }`}
+              >
+                <div>
+                  {/* Status Indicator Pill */}
+                  <div className="flex items-center justify-between gap-2 mb-2">
+                    {isAllAvailable ? (
+                      <span className="text-[11px] font-bold text-emerald-800 bg-emerald-50 border border-emerald-200 px-2.5 py-0.5 rounded-full flex items-center gap-1 shadow-2xs">
+                        <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+                        <span>Bahan Siap di Kulkas</span>
+                      </span>
+                    ) : (
+                      <span className="text-[11px] font-bold text-rose-700 bg-rose-50 border border-rose-200 px-2.5 py-0.5 rounded-full flex items-center gap-1">
+                        <AlertCircle className="w-3.5 h-3.5 text-rose-500" />
+                        <span>Bahan Kurang ({missingIngredients.length})</span>
+                      </span>
+                    )}
+
+                    <span className="text-xs text-slate-400 flex items-center gap-1 shrink-0">
+                      <Clock className="w-3 h-3" /> {recipe.cookTimeMins}m
                     </span>
-                  ))}
-                  {recipe.ingredients.length > 4 && (
-                    <span className="text-[10px] text-slate-400 px-1">+{recipe.ingredients.length - 4} more</span>
+                  </div>
+
+                  {/* Recipe Title */}
+                  <h5 className={`font-bold text-base leading-snug mt-1 ${isAllAvailable ? 'text-slate-900' : 'text-slate-500'}`}>
+                    {recipe.title}
+                  </h5>
+
+                  {/* Required Ingredients Check */}
+                  <div className="mt-3">
+                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">
+                      Kebutuhan Bahan:
+                    </p>
+                    <div className="flex flex-wrap gap-1">
+                      {recipe.ingredients.map(ing => {
+                        const inStock = checkIngredientInStock(ing);
+                        return (
+                          <span
+                            key={ing}
+                            className={`text-[11px] px-2 py-0.5 rounded-md font-medium border flex items-center gap-1 ${
+                              inStock
+                                ? 'bg-emerald-50 text-emerald-800 border-emerald-200'
+                                : 'bg-rose-50 text-rose-700 border-rose-200'
+                            }`}
+                          >
+                            <span>{inStock ? '✓' : '✗'}</span>
+                            <span>{ing}</span>
+                          </span>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  {/* Missing Ingredient Helper Action (If Disabled) */}
+                  {!isAllAvailable && missingIngredients.length > 0 && (
+                    <div className="mt-3 p-2 rounded-xl bg-white border border-slate-200 text-xs">
+                      <p className="text-[10px] font-semibold text-slate-500 mb-1">Tambah bahan yang kurang ke To-Buy list:</p>
+                      <div className="flex flex-wrap gap-1">
+                        {missingIngredients.map(ing => (
+                          <button
+                            key={ing}
+                            onClick={() => handleAddMissingToShopping(ing)}
+                            className="text-[10px] font-semibold text-emerald-700 hover:text-emerald-800 bg-emerald-50 hover:bg-emerald-100 px-2 py-0.5 rounded border border-emerald-200 flex items-center gap-1 transition"
+                            title="Klik untuk tambah ke shopping list"
+                          >
+                            <ShoppingCart className="w-3 h-3" /> + Beli {ing}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Tags */}
+                  <div className="flex flex-wrap gap-1 mt-3">
+                    {recipe.tags.map(tag => (
+                      <span key={tag} className="text-[10px] text-slate-500 bg-slate-100 px-1.5 py-0.5 rounded flex items-center gap-0.5">
+                        <Tag className="w-2.5 h-2.5" /> {tag}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Card Action Button */}
+                <div className="mt-4 pt-3 border-t border-slate-100">
+                  {isAllAvailable ? (
+                    <button
+                      onClick={() => setSchedulingRecipe(recipe)}
+                      className="w-full py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 shadow-sm transition"
+                    >
+                      <Calendar className="w-3.5 h-3.5" />
+                      <span>+ Jadwalkan ke Meal Plan</span>
+                    </button>
+                  ) : (
+                    <button
+                      disabled
+                      className="w-full py-2 bg-slate-200 text-slate-400 rounded-xl text-xs font-semibold cursor-not-allowed text-center"
+                    >
+                      Bahan Belum Lengkap (Disabled)
+                    </button>
                   )}
                 </div>
               </div>
+            );
+          })}
 
-              <div className="flex flex-wrap gap-1 mt-3">
-                {recipe.tags.map((tag, i) => (
-                  <span key={i} className="text-[10px] text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded flex items-center gap-0.5">
-                    <Tag className="w-2.5 h-2.5" /> {tag}
-                  </span>
-                ))}
-              </div>
+          {cuisineRecipes.length === 0 && (
+            <div className="col-span-full py-12 text-center text-slate-400">
+              <p className="text-sm font-semibold">Belum ada menu untuk {selectedCuisine}.</p>
             </div>
-          ))}
+          )}
         </div>
       </div>
 
-      {/* Edit Meal Modal */}
+      {/* QUICK SCHEDULE MODAL */}
+      {schedulingRecipe && (
+        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl max-w-sm w-full p-6 shadow-xl border border-slate-200">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-100 mb-4">
+              <h4 className="font-bold text-slate-800">Jadwalkan Menu Masakan</h4>
+              <button onClick={() => setSchedulingRecipe(null)} className="p-1 text-slate-400 hover:text-slate-600">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="space-y-3.5">
+              <div className="p-3 bg-emerald-50 rounded-xl border border-emerald-100 text-emerald-900">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-700 block">Menu Terpilih</span>
+                <p className="font-bold text-sm mt-0.5">{schedulingRecipe.title}</p>
+                <p className="text-xs text-emerald-700 mt-0.5">{schedulingRecipe.cookTimeMins} menit • {schedulingRecipe.cuisine}</p>
+              </div>
+
+              <div>
+                <label className="text-xs font-semibold text-slate-700 block mb-1">Pilih Hari</label>
+                <select
+                  value={targetDay}
+                  onChange={(e) => setTargetDay(e.target.value as any)}
+                  className="w-full text-xs font-semibold px-3 py-2 border border-slate-300 rounded-xl focus:outline-none focus:border-emerald-500 bg-white"
+                >
+                  {days.map(d => (
+                    <option key={d} value={d}>{d}</option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label className="text-xs font-semibold text-slate-700 block mb-1">Waktu Makan</label>
+                <select
+                  value={targetMealType}
+                  onChange={(e) => setTargetMealType(e.target.value as any)}
+                  className="w-full text-xs font-semibold px-3 py-2 border border-slate-300 rounded-xl focus:outline-none focus:border-emerald-500 bg-white"
+                >
+                  <option value="breakfast">Breakfast</option>
+                  <option value="lunch">Lunch</option>
+                  <option value="dinner">Dinner</option>
+                </select>
+              </div>
+
+              <div className="flex justify-end gap-2 pt-3">
+                <button
+                  type="button"
+                  onClick={() => setSchedulingRecipe(null)}
+                  className="px-4 py-2 border border-slate-200 text-slate-600 rounded-xl text-xs font-medium hover:bg-slate-50"
+                >
+                  Batal
+                </button>
+                <button
+                  type="button"
+                  onClick={handleConfirmSchedule}
+                  className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-semibold flex items-center gap-1.5 shadow-sm"
+                >
+                  <Check className="w-4 h-4" /> Masukkan ke Kalender
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Edit Meal Slot Modal */}
       {editingMeal && (
         <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center p-4">
           <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-xl border border-slate-200">
@@ -244,17 +529,15 @@ export const MealPlannerView: React.FC = () => {
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="text-xs font-semibold text-slate-700 block mb-1">Category</label>
+                  <label className="text-xs font-semibold text-slate-700 block mb-1">Cuisine</label>
                   <select
-                    value={recipeCategory}
-                    onChange={(e) => setRecipeCategory(e.target.value as any)}
-                    className="w-full text-xs px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:border-emerald-500"
+                    value={recipeCuisine}
+                    onChange={(e) => setRecipeCuisine(e.target.value as any)}
+                    className="w-full text-xs px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:border-emerald-500 bg-white"
                   >
-                    <option value="Indonesian">Indonesian</option>
-                    <option value="Western">Western</option>
-                    <option value="Quick & Easy">Quick & Easy</option>
-                    <option value="Healthy">Healthy</option>
-                    <option value="Batch Cook">Batch Cook</option>
+                    {cuisines.map(c => (
+                      <option key={c.id} value={c.id}>{c.flag} {c.label}</option>
+                    ))}
                   </select>
                 </div>
                 <div>
@@ -269,14 +552,16 @@ export const MealPlannerView: React.FC = () => {
               </div>
 
               <div>
-                <label className="text-xs font-semibold text-slate-700 block mb-1">Ingredients (comma separated)</label>
+                <label className="text-xs font-semibold text-slate-700 block mb-1">Ingredients (comma separated) *</label>
                 <textarea
                   rows={2}
+                  required
                   value={recipeIngredients}
                   onChange={(e) => setRecipeIngredients(e.target.value)}
-                  placeholder="Ayam, Kecap manis, Bawang putih, Cabe rawit"
+                  placeholder="Ayam Dada Fillet, Bawang Merah & Putih, Minyak Goreng"
                   className="w-full text-xs px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:border-emerald-500"
                 />
+                <p className="text-[10px] text-slate-400 mt-1">💡 Gunakan nama bahan yang cocok dengan nama item di kulkas agar otomatis terdeteksi.</p>
               </div>
 
               <div>

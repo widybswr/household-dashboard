@@ -25,29 +25,144 @@ export const initialMealPlan: MealPlanItem[] = [
 ];
 
 export const initialRecipes: Recipe[] = [
+  // Indonesian
   {
     id: 'r1',
     title: 'Ayam Goreng Lengkuas',
-    category: 'Indonesian',
-    cookTimeMins: 45,
-    ingredients: ['Ayam', 'Lengkuas', 'Bawang merah', 'Bawang putih', 'Kunyit', 'Ketumbar', 'Daun salam'],
-    tags: ['High Protein', 'Batch Cook', 'Family Favorite']
+    cuisine: 'Indonesian',
+    cookTimeMins: 40,
+    ingredients: ['Ayam Dada Fillet', 'Bawang Merah & Putih', 'Minyak Goreng'],
+    tags: ['High Protein', 'Family Favorite']
   },
   {
     id: 'r2',
-    title: 'Salmon Teriyaki Bowl',
-    category: 'Quick & Easy',
-    cookTimeMins: 20,
-    ingredients: ['Salmon', 'Saus Teriyaki', 'Brokoli', 'Beras', 'Wijen'],
-    tags: ['Quick < 20 mins', 'Healthy', 'Omega-3']
+    title: 'Nasi Goreng Telur Spesial',
+    cuisine: 'Indonesian',
+    cookTimeMins: 15,
+    ingredients: ['Beras Pandan Wangi', 'Telur Ayam', 'Bawang Merah & Putih', 'Minyak Goreng'],
+    tags: ['Quick < 15 mins', 'Comfort Food']
   },
   {
     id: 'r3',
-    title: 'Capcay Kuah Bakso',
-    category: 'Healthy',
+    title: 'Tumis Buncis Tahu Tempe',
+    cuisine: 'Indonesian',
+    cookTimeMins: 20,
+    ingredients: ['Tahu & Tempe', 'Buncis', 'Bawang Merah & Putih'],
+    tags: ['Vegetarian', 'Budget Friendly']
+  },
+
+  // Japanese
+  {
+    id: 'r4',
+    title: 'Salmon Teriyaki Bowl',
+    cuisine: 'Japanese',
+    cookTimeMins: 20,
+    ingredients: ['Salmon Fillet', 'Beras Pandan Wangi', 'Saus Teriyaki Kikkoman', 'Brokoli Hijau'],
+    tags: ['Healthy', 'Omega-3', 'Quick']
+  },
+  {
+    id: 'r5',
+    title: 'Chicken Teriyaki Rice',
+    cuisine: 'Japanese',
     cookTimeMins: 25,
-    ingredients: ['Wortel', 'Kembang kol', 'Sawi putih', 'Bakso sapi', 'Bawang putih', 'Minyak wijen'],
-    tags: ['Veggies', 'Comfort Food']
+    ingredients: ['Ayam Dada Fillet', 'Beras Pandan Wangi', 'Saus Teriyaki Kikkoman'],
+    tags: ['High Protein', 'Batch Cook']
+  },
+  {
+    id: 'r6',
+    title: 'Gyudon Beef Bowl',
+    cuisine: 'Japanese',
+    cookTimeMins: 20,
+    ingredients: ['Daging Sapi Giling', 'Beras Pandan Wangi', 'Bawang Merah & Putih'],
+    tags: ['Savory', 'Japanese Classic']
+  },
+
+  // Italian
+  {
+    id: 'r7',
+    title: 'Pasta Aglio Olio',
+    cuisine: 'Italian',
+    cookTimeMins: 15,
+    ingredients: ['Pasta Spaghetti', 'Bawang Merah & Putih', 'Minyak Goreng'],
+    tags: ['Quick < 15 mins', 'Classic']
+  },
+  {
+    id: 'r8',
+    title: 'Creamy Carbonara',
+    cuisine: 'Italian',
+    cookTimeMins: 20,
+    ingredients: ['Pasta Spaghetti', 'Telur Ayam', 'Keju Cheddar Kraft', 'Susu UHT Full Cream'],
+    tags: ['Creamy', 'Comfort Food']
+  },
+  {
+    id: 'r9',
+    title: 'Spaghetti Bolognese',
+    cuisine: 'Italian',
+    cookTimeMins: 35,
+    ingredients: ['Pasta Spaghetti', 'Daging Sapi Giling', 'Bawang Merah & Putih'],
+    tags: ['Rich', 'Family Favorite']
+  },
+
+  // Chinese
+  {
+    id: 'r10',
+    title: 'Capcay Ayam & Sayuran',
+    cuisine: 'Chinese',
+    cookTimeMins: 25,
+    ingredients: ['Ayam Dada Fillet', 'Brokoli Hijau', 'Wortel', 'Bawang Merah & Putih'],
+    tags: ['Healthy Veggies', 'High Fiber']
+  },
+  {
+    id: 'r11',
+    title: 'Telur Dadar Jamur & Bawang',
+    cuisine: 'Chinese',
+    cookTimeMins: 10,
+    ingredients: ['Telur Ayam', 'Bawang Merah & Putih', 'Minyak Goreng'],
+    tags: ['Quick 10-Min Meal']
+  },
+  {
+    id: 'r12',
+    title: 'Sapo Tahu Ikan Dori',
+    cuisine: 'Chinese',
+    cookTimeMins: 30,
+    ingredients: ['Tahu & Tempe', 'Dori Fillet', 'Brokoli Hijau'],
+    tags: ['Warm Claypot', 'Seafood']
+  },
+
+  // Mexican
+  {
+    id: 'r13',
+    title: 'Huevos Rancheros Egg Skillet',
+    cuisine: 'Mexican',
+    cookTimeMins: 15,
+    ingredients: ['Telur Ayam', 'Bawang Merah & Putih', 'Minyak Goreng'],
+    tags: ['Breakfast', 'Spicy & Savory']
+  },
+  {
+    id: 'r14',
+    title: 'Chicken Quesadilla',
+    cuisine: 'Mexican',
+    cookTimeMins: 20,
+    ingredients: ['Ayam Dada Fillet', 'Keju Cheddar Kraft', 'Roti Gandum'],
+    tags: ['Cheesy', 'Snack / Lunch']
+  },
+
+  // Indian
+  {
+    id: 'r15',
+    title: 'Egg Curry & Rice',
+    cuisine: 'Indian',
+    cookTimeMins: 30,
+    ingredients: ['Telur Ayam', 'Beras Pandan Wangi', 'Bawang Merah & Putih', 'Minyak Goreng'],
+    tags: ['Aromatic Spices', 'High Protein']
+  },
+  {
+    id: 'r16',
+    title: 'Chicken Tikka Skillet',
+    cuisine: 'Indian',
+    cookTimeMins: 35,
+    ingredients: ['Ayam Dada Fillet', 'Greek Yogurt', 'Bawang Merah & Putih'],
+    tags: ['Rich', 'Tender Chicken']
   }
 ];
 

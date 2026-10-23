@@ -84,6 +84,12 @@ export const HouseholdProvider: React.FC<{ children: React.ReactNode }> = ({ chi
   });
 
   const [recipes, setRecipes] = useState<Recipe[]>(() => {
+    const version = localStorage.getItem('home_recipes_v2');
+    if (!version) {
+      localStorage.setItem('home_recipes_v2', 'active');
+      localStorage.setItem('home_recipes', JSON.stringify(initialRecipes));
+      return initialRecipes;
+    }
     const saved = localStorage.getItem('home_recipes');
     return saved ? JSON.parse(saved) : initialRecipes;
   });

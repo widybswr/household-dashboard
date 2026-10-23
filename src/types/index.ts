@@ -17,10 +17,18 @@ export interface MealPlanItem {
   notes?: string;
 }
 
+export type CuisineType = 
+  | 'Indonesian' 
+  | 'Japanese' 
+  | 'Italian' 
+  | 'Chinese' 
+  | 'Mexican' 
+  | 'Indian';
+
 export interface Recipe {
   id: string;
   title: string;
-  category: 'Indonesian' | 'Western' | 'Quick & Easy' | 'Healthy' | 'Batch Cook';
+  cuisine: CuisineType;
   cookTimeMins: number;
   ingredients: string[];
   tags: string[];
