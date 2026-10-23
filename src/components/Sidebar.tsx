@@ -2,6 +2,7 @@ import React from 'react';
 import { 
   LayoutDashboard, 
   UtensilsCrossed, 
+  Package,
   Sparkles, 
   CreditCard, 
   ShoppingCart, 
@@ -13,14 +14,21 @@ import { useHousehold } from '../context/HouseholdContext';
 import { TabType } from '../types';
 
 export const Sidebar: React.FC = () => {
-  const { activeTab, setActiveTab, helperMode, setHelperMode, artTasks, bills, shoppingItems } = useHousehold();
+  const { activeTab, setActiveTab, helperMode, setHelperMode, artTasks, bills, shoppingItems, fridgeItems } = useHousehold();
 
   // Calculate badges
   const pendingBills = bills.filter(b => !b.isPaid).length;
   const pendingGroceries = shoppingItems.filter(s => !s.isCompleted).length;
   
-  // Overdue or due chores
+  // Fridge expiring soon (<= 3 days)
   const today = new Date();
+  const expiringFoodCount = fridgeItems.filter(f => {
+    const exp = new Date(f.expiryDate);
+    const diffDays = Math.ceil((exp.getTime() - today.getTime()) / (1000 * 3600 * 24));
+    return diffDays <= 3;
+  }).length;
+  
+  // Overdue or due chores
   const dueChores = artTasks.filter(task => {
     const last = new Date(task.lastDoneDate);
     const diffDays = Math.floor((today.getTime() - last.getTime()) / (1000 * 3600 * 24));
@@ -30,6 +38,7 @@ export const Sidebar: React.FC = () => {
   const navItems: { id: TabType; label: string; icon: React.ReactNode; badge?: number }[] = [
     { id: 'dashboard', label: 'Overview', icon: <LayoutDashboard className="w-5 h-5" /> },
     { id: 'meals', label: 'Meal Planner', icon: <UtensilsCrossed className="w-5 h-5" /> },
+    { id: 'fridge', label: 'Fridge & Stock', icon: <Package className="w-5 h-5" />, badge: expiringFoodCount },
     { id: 'art', label: 'ART & Chores', icon: <Sparkles className="w-5 h-5" />, badge: dueChores },
     { id: 'bills', label: 'Bills & Payments', icon: <CreditCard className="w-5 h-5" />, badge: pendingBills },
     { id: 'shopping', label: 'To-Buy & Groceries', icon: <ShoppingCart className="w-5 h-5" />, badge: pendingGroceries },

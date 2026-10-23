@@ -4,6 +4,7 @@ import { Sidebar } from './components/Sidebar';
 import { Header } from './components/Header';
 import { DashboardView } from './components/DashboardView';
 import { MealPlannerView } from './components/MealPlannerView';
+import { FridgeView } from './components/FridgeView';
 import { ArtTasksView } from './components/ArtTasksView';
 import { BillsView } from './components/BillsView';
 import { ShoppingView } from './components/ShoppingView';
@@ -17,6 +18,7 @@ const MainContent: React.FC = () => {
     <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto w-full">
       {activeTab === 'dashboard' && <DashboardView />}
       {activeTab === 'meals' && <MealPlannerView />}
+      {activeTab === 'fridge' && <FridgeView />}
       {activeTab === 'art' && <ArtTasksView />}
       {activeTab === 'bills' && <BillsView />}
       {activeTab === 'shopping' && <ShoppingView />}

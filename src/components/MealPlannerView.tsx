@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { useHousehold } from '../context/HouseholdContext';
 import { MealPlanItem, Recipe } from '../types';
-import { Plus, BookOpen, Clock, Tag, X, Check, Edit2 } from 'lucide-react';
+import { Plus, BookOpen, Clock, Tag, X, Check, Edit2, Sparkles } from 'lucide-react';
 
 export const MealPlannerView: React.FC = () => {
-  const { mealPlan, recipes, updateMeal, addRecipe } = useHousehold();
+  const { mealPlan, recipes, fridgeItems, updateMeal, addRecipe, setActiveTab } = useHousehold();
   
   const [editingMeal, setEditingMeal] = useState<MealPlanItem | null>(null);
   const [editTitle, setEditTitle] = useState('');
@@ -61,12 +61,20 @@ export const MealPlannerView: React.FC = () => {
           <h3 className="font-bold text-slate-800">Weekly Meal Calendar</h3>
           <p className="text-xs text-slate-500">Plan out meals to automate grocery shopping and eliminate daily cooking stress</p>
         </div>
-        <button
-          onClick={() => setShowRecipeModal(true)}
-          className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-semibold flex items-center gap-2 shadow-sm shrink-0"
-        >
-          <Plus className="w-4 h-4" /> Add Favorite Recipe
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setActiveTab('fridge')}
+            className="px-3.5 py-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition shadow-sm"
+          >
+            <Sparkles className="w-3.5 h-3.5 text-emerald-600" /> Smart Fridge Matcher
+          </button>
+          <button
+            onClick={() => setShowRecipeModal(true)}
+            className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-semibold flex items-center gap-2 shadow-sm shrink-0"
+          >
+            <Plus className="w-4 h-4" /> Add Favorite Recipe
+          </button>
+        </div>
       </div>
 
       {/* 7-Day Grid */}
@@ -149,12 +157,28 @@ export const MealPlannerView: React.FC = () => {
                 </div>
               </div>
 
-              <div className="flex flex-wrap gap-1 mt-3">
-                {recipe.tags.map((tag, i) => (
-                  <span key={i} className="text-[10px] text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded flex items-center gap-0.5">
-                    <Tag className="w-2.5 h-2.5" /> {tag}
-                  </span>
-                ))}
+              <div className="flex flex-wrap items-center justify-between gap-1 mt-3 pt-2 border-t border-slate-100">
+                <div className="flex flex-wrap gap-1">
+                  {recipe.tags.map((tag, i) => (
+                    <span key={i} className="text-[10px] text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded flex items-center gap-0.5">
+                      <Tag className="w-2.5 h-2.5" /> {tag}
+                    </span>
+                  ))}
+                </div>
+
+                {(() => {
+                  const inStock = recipe.ingredients.filter(ing =>
+                    fridgeItems.some(f => f.name.toLowerCase().includes(ing.toLowerCase()) || ing.toLowerCase().includes(f.name.toLowerCase()))
+                  ).length;
+                  const isAll = inStock === recipe.ingredients.length;
+                  return (
+                    <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${
+                      isAll ? 'bg-emerald-100 text-emerald-800' : inStock > 0 ? 'bg-amber-100 text-amber-800' : 'bg-slate-100 text-slate-500'
+                    }`}>
+                      {isAll ? 'In Fridge ✅' : `${inStock}/${recipe.ingredients.length} Stocked`}
+                    </span>
+                  );
+                })()}
               </div>
             </div>
           ))}

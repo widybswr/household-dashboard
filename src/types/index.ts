@@ -1,6 +1,7 @@
 export type TabType = 
   | 'dashboard' 
   | 'meals' 
+  | 'fridge'
   | 'art' 
   | 'bills' 
   | 'shopping' 
@@ -23,6 +24,17 @@ export interface Recipe {
   cookTimeMins: number;
   ingredients: string[];
   tags: string[];
+}
+
+export interface FridgeItem {
+  id: string;
+  name: string;
+  zone: 'Fridge' | 'Freezer' | 'Pantry';
+  category: 'Produce & Veggies' | 'Meat & Seafood' | 'Dairy & Eggs' | 'Condiments & Sauces' | 'Pantry & Dry';
+  quantity: string;
+  expiryDate: string; // YYYY-MM-DD
+  isLowStock?: boolean;
+  notes?: string;
 }
 
 export interface ArtTask {

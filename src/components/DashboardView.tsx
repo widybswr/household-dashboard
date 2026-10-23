@@ -8,9 +8,10 @@ import {
   Wifi, 
   Phone, 
   CheckCircle2, 
-  ArrowRight,
-  Plus,
-  AlertTriangle
+  ArrowRight, 
+  Plus, 
+  AlertTriangle,
+  Package
 } from 'lucide-react';
 
 export const DashboardView: React.FC = () => {
@@ -90,6 +91,13 @@ export const DashboardView: React.FC = () => {
             >
               <Utensils className="w-3.5 h-3.5" />
               Meal Planner
+            </button>
+            <button
+              onClick={() => setActiveTab('fridge')}
+              className="bg-white/10 hover:bg-white/20 backdrop-blur border border-white/20 text-white text-xs font-medium px-3.5 py-2 rounded-xl transition flex items-center gap-1.5"
+            >
+              <Package className="w-3.5 h-3.5" />
+              Fridge Stocks
             </button>
             <button
               onClick={() => setActiveTab('art')}

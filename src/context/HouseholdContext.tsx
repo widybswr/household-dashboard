@@ -7,11 +7,13 @@ import {
   BillItem, 
   ShoppingItem, 
   RenovationItem, 
-  ApartmentInfo 
+  ApartmentInfo,
+  FridgeItem
 } from '../types';
 import { 
   initialMealPlan, 
   initialRecipes, 
+  initialFridgeItems,
   initialArtTasks, 
   initialBills, 
   initialShoppingItems, 
@@ -30,6 +32,14 @@ interface HouseholdContextType {
   recipes: Recipe[];
   updateMeal: (id: string, title: string, notes?: string) => void;
   addRecipe: (recipe: Omit<Recipe, 'id'>) => void;
+  assignRecipeToMeal: (recipeTitle: string, day: MealPlanItem['day'], mealType: MealPlanItem['mealType']) => void;
+
+  // Fridge
+  fridgeItems: FridgeItem[];
+  addFridgeItem: (item: Omit<FridgeItem, 'id'>) => void;
+  updateFridgeItem: (id: string, updates: Partial<FridgeItem>) => void;
+  deleteFridgeItem: (id: string) => void;
+  sendFridgeItemToShopping: (item: FridgeItem) => void;
 
   // ART Tasks
   artTasks: ArtTask[];
@@ -76,6 +86,11 @@ export const HouseholdProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     return saved ? JSON.parse(saved) : initialRecipes;
   });
 
+  const [fridgeItems, setFridgeItems] = useState<FridgeItem[]>(() => {
+    const saved = localStorage.getItem('home_fridge');
+    return saved ? JSON.parse(saved) : initialFridgeItems;
+  });
+
   const [artTasks, setArtTasks] = useState<ArtTask[]>(() => {
     const saved = localStorage.getItem('home_artTasks');
     return saved ? JSON.parse(saved) : initialArtTasks;
@@ -104,6 +119,7 @@ export const HouseholdProvider: React.FC<{ children: React.ReactNode }> = ({ chi
   // Sync to local storage
   useEffect(() => { localStorage.setItem('home_mealPlan', JSON.stringify(mealPlan)); }, [mealPlan]);
   useEffect(() => { localStorage.setItem('home_recipes', JSON.stringify(recipes)); }, [recipes]);
+  useEffect(() => { localStorage.setItem('home_fridge', JSON.stringify(fridgeItems)); }, [fridgeItems]);
   useEffect(() => { localStorage.setItem('home_artTasks', JSON.stringify(artTasks)); }, [artTasks]);
   useEffect(() => { localStorage.setItem('home_bills', JSON.stringify(bills)); }, [bills]);
   useEffect(() => { localStorage.setItem('home_shopping', JSON.stringify(shoppingItems)); }, [shoppingItems]);
@@ -118,6 +134,49 @@ export const HouseholdProvider: React.FC<{ children: React.ReactNode }> = ({ chi
   const addRecipe = (recipe: Omit<Recipe, 'id'>) => {
     const newRecipe: Recipe = { ...recipe, id: 'r_' + Date.now() };
     setRecipes(prev => [newRecipe, ...prev]);
+  };
+
+  const assignRecipeToMeal = (recipeTitle: string, day: MealPlanItem['day'], mealType: MealPlanItem['mealType']) => {
+    setMealPlan(prev => prev.map(m => {
+      if (m.day === day && m.mealType === mealType) {
+        return { ...m, title: recipeTitle };
+      }
+      return m;
+    }));
+  };
+
+  // Fridge Actions
+  const addFridgeItem = (item: Omit<FridgeItem, 'id'>) => {
+    const newItem: FridgeItem = {
+      ...item,
+      id: 'f_' + Date.now()
+    };
+    setFridgeItems(prev => [newItem, ...prev]);
+  };
+
+  const updateFridgeItem = (id: string, updates: Partial<FridgeItem>) => {
+    setFridgeItems(prev => prev.map(f => f.id === id ? { ...f, ...updates } : f));
+  };
+
+  const deleteFridgeItem = (id: string) => {
+    setFridgeItems(prev => prev.filter(f => f.id !== id));
+  };
+
+  const sendFridgeItemToShopping = (item: FridgeItem) => {
+    const cat = item.category === 'Produce & Veggies' || item.category === 'Meat & Seafood' || item.category === 'Dairy & Eggs' 
+      ? 'Groceries' 
+      : 'Pantry Staples';
+    
+    // Add to shopping items if not already existing
+    addShoppingItem({
+      title: item.name,
+      category: cat,
+      quantity: item.quantity,
+      urgency: 'routine'
+    });
+
+    // Mark as low stock
+    updateFridgeItem(item.id, { isLowStock: true });
   };
 
   // ART Tasks Actions
@@ -204,6 +263,12 @@ export const HouseholdProvider: React.FC<{ children: React.ReactNode }> = ({ chi
         recipes,
         updateMeal,
         addRecipe,
+        assignRecipeToMeal,
+        fridgeItems,
+        addFridgeItem,
+        updateFridgeItem,
+        deleteFridgeItem,
+        sendFridgeItemToShopping,
         artTasks,
         completeArtTask,
         addArtTask,

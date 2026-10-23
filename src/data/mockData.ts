@@ -1,4 +1,4 @@
-import { ArtTask, BillItem, MealPlanItem, Recipe, RenovationItem, ShoppingItem, ApartmentInfo } from '../types';
+import { ArtTask, BillItem, MealPlanItem, Recipe, RenovationItem, ShoppingItem, ApartmentInfo, FridgeItem } from '../types';
 
 export const initialMealPlan: MealPlanItem[] = [
   { id: 'm1', day: 'Monday', mealType: 'breakfast', title: 'Oatmeal & Fresh Berries', notes: 'Quick prep' },
@@ -30,7 +30,7 @@ export const initialRecipes: Recipe[] = [
     title: 'Ayam Goreng Lengkuas',
     category: 'Indonesian',
     cookTimeMins: 45,
-    ingredients: ['Ayam 1kg', 'Lengkuas parut 200g', 'Bawang merah 8 siung', 'Bawang putih 5 siung', 'Kunyit', 'Ketumbar', 'Daun salam & sereh'],
+    ingredients: ['Ayam', 'Lengkuas', 'Bawang merah', 'Bawang putih', 'Kunyit', 'Ketumbar', 'Daun salam'],
     tags: ['High Protein', 'Batch Cook', 'Family Favorite']
   },
   {
@@ -38,7 +38,7 @@ export const initialRecipes: Recipe[] = [
     title: 'Salmon Teriyaki Bowl',
     category: 'Quick & Easy',
     cookTimeMins: 20,
-    ingredients: ['Salmon fillet 300g', 'Saus Teriyaki Kikkoman', 'Wijen sangrai', 'Brokoli rebus', 'Nasi Jepang'],
+    ingredients: ['Salmon', 'Saus Teriyaki', 'Brokoli', 'Beras', 'Wijen'],
     tags: ['Quick < 20 mins', 'Healthy', 'Omega-3']
   },
   {
@@ -46,8 +46,112 @@ export const initialRecipes: Recipe[] = [
     title: 'Capcay Kuah Bakso',
     category: 'Healthy',
     cookTimeMins: 25,
-    ingredients: ['Wortel', 'Kembang kol', 'Sawi putih', 'Bakso sapi 10 butir', 'Bawang putih cincang', 'Minyak wijen', 'Saus tiram'],
+    ingredients: ['Wortel', 'Kembang kol', 'Sawi putih', 'Bakso sapi', 'Bawang putih', 'Minyak wijen'],
     tags: ['Veggies', 'Comfort Food']
+  },
+  {
+    id: 'r4',
+    title: 'Telur Dadar Sayur & Nasi Hangat',
+    category: 'Quick & Easy',
+    cookTimeMins: 10,
+    ingredients: ['Telur', 'Bawang merah', 'Wortel', 'Beras'],
+    tags: ['Emergency 10-Min Meal', 'High Protein']
+  }
+];
+
+export const initialFridgeItems: FridgeItem[] = [
+  {
+    id: 'f1',
+    name: 'Salmon Fillet Fresh',
+    zone: 'Fridge',
+    category: 'Meat & Seafood',
+    quantity: '300 grams',
+    expiryDate: '2026-10-25', // 2 days from today
+    isLowStock: false,
+    notes: 'Use soon for Teriyaki bowl!'
+  },
+  {
+    id: 'f2',
+    name: 'Susu UHT Full Cream',
+    zone: 'Fridge',
+    category: 'Dairy & Eggs',
+    quantity: '0.5 liter remaining',
+    expiryDate: '2026-10-24', // tomorrow
+    isLowStock: true,
+    notes: 'Already opened'
+  },
+  {
+    id: 'f3',
+    name: 'Brokoli Hijau',
+    zone: 'Fridge',
+    category: 'Produce & Veggies',
+    quantity: '1 bonggol',
+    expiryDate: '2026-10-26',
+    isLowStock: false
+  },
+  {
+    id: 'f4',
+    name: 'Telur Ayam Omega',
+    zone: 'Fridge',
+    category: 'Dairy & Eggs',
+    quantity: '8 butir',
+    expiryDate: '2026-11-08',
+    isLowStock: false
+  },
+  {
+    id: 'f5',
+    name: 'Saus Teriyaki Kikkoman',
+    zone: 'Fridge',
+    category: 'Condiments & Sauces',
+    quantity: '1 bottle (70% full)',
+    expiryDate: '2027-03-15',
+    isLowStock: false
+  },
+  {
+    id: 'f6',
+    name: 'Ayam Dada Fillet (Frozen)',
+    zone: 'Freezer',
+    category: 'Meat & Seafood',
+    quantity: '1 kg (2 packs)',
+    expiryDate: '2026-11-30',
+    isLowStock: false,
+    notes: 'Move to chiller the night before cooking'
+  },
+  {
+    id: 'f7',
+    name: 'Bakso Sapi Sumber Selera',
+    zone: 'Freezer',
+    category: 'Meat & Seafood',
+    quantity: '1 pack (25 pcs)',
+    expiryDate: '2026-12-15',
+    isLowStock: false
+  },
+  {
+    id: 'f8',
+    name: 'Beras Pandan Wangi',
+    zone: 'Pantry',
+    category: 'Pantry & Dry',
+    quantity: '4 kg remaining',
+    expiryDate: '2027-04-01',
+    isLowStock: false
+  },
+  {
+    id: 'f9',
+    name: 'Bawang Merah & Bawang Putih',
+    zone: 'Pantry',
+    category: 'Pantry & Dry',
+    quantity: '250 grams each',
+    expiryDate: '2026-11-15',
+    isLowStock: false
+  },
+  {
+    id: 'f10',
+    name: 'Wortel Brastagi',
+    zone: 'Fridge',
+    category: 'Produce & Veggies',
+    quantity: '3 batang',
+    expiryDate: '2026-10-29',
+    isLowStock: false
   }
 ];
 
