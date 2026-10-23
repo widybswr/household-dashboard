@@ -2,12 +2,10 @@ import React, { useState } from 'react';
 import { useHousehold } from '../context/HouseholdContext';
 import { FridgeItem, FoodCategory, FoodUnit } from '../types';
 import { 
-  Package, 
   Plus, 
   Minus, 
   Trash2, 
   ShoppingCart, 
-  Search, 
   CheckCircle2, 
   X,
   AlertCircle
@@ -23,7 +21,6 @@ export const FridgeView: React.FC = () => {
     sendFridgeItemToShopping 
   } = useHousehold();
 
-  const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
   const [showAddModal, setShowAddModal] = useState(false);
   const [floatingToast, setFloatingToast] = useState<string | null>(null);
@@ -72,7 +69,6 @@ export const FridgeView: React.FC = () => {
   // Filter items
   const filteredItems = fridgeItems.filter(item => {
     if (selectedCategory !== 'All' && item.category !== selectedCategory) return false;
-    if (searchQuery.trim() && !item.name.toLowerCase().includes(searchQuery.toLowerCase())) return false;
     return true;
   });
 
@@ -113,7 +109,7 @@ export const FridgeView: React.FC = () => {
   };
 
   return (
-    <div className="space-y-6 relative">
+    <div className="space-y-4 relative">
       {/* FLOATING TOAST NOTIFICATION */}
       {floatingToast && (
         <div className="fixed bottom-6 right-6 z-50 animate-bounce sm:animate-none transition-all">
@@ -132,79 +128,51 @@ export const FridgeView: React.FC = () => {
         </div>
       )}
 
-      {/* Top Banner & Action */}
-      <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <div className="flex items-center gap-2">
-            <Package className="w-5 h-5 text-emerald-600" />
-            <h3 className="font-bold text-slate-800 text-lg">Pantry & Food Stocks</h3>
-          </div>
-          <p className="text-xs text-slate-500 mt-1">
-            Organized by nutrition categories. Adjust stock quantities directly in the table below.
-          </p>
+      {/* Inline Category Filters & Add Item Button Row */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div className="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0">
+          {categories.map(cat => {
+            const count = categoryCounts[cat] || 0;
+            const isSelected = selectedCategory === cat;
+            return (
+              <button
+                key={cat}
+                onClick={() => setSelectedCategory(cat)}
+                className={`text-xs px-3.5 py-2 rounded-xl font-medium whitespace-nowrap transition flex items-center gap-1.5 ${
+                  isSelected
+                    ? 'bg-slate-900 text-white shadow-sm'
+                    : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-50'
+                }`}
+              >
+                <span>{cat === 'Protein' ? '🥩 Protein' : cat === 'Carbs' ? '🍚 Carbs' : cat === 'Greens' ? '🥦 Greens' : cat === 'Dairy' ? '🥛 Dairy' : cat === 'Condiments & Seasonings' ? '🧂 Seasonings' : cat === 'Fruits & Others' ? '🍎 Fruits' : 'All Items'}</span>
+                <span className={`text-[11px] px-1.5 py-0.2 rounded-full font-bold ${
+                  isSelected ? 'bg-slate-700 text-white' : 'bg-slate-100 text-slate-600'
+                }`}>
+                  {count}
+                </span>
+              </button>
+            );
+          })}
         </div>
 
         <button
           onClick={() => setShowAddModal(true)}
           className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-semibold flex items-center gap-1.5 shadow-sm self-start sm:self-auto shrink-0 transition"
         >
-          <Plus className="w-4 h-4" /> Add Food Item
+          <Plus className="w-4 h-4" /> Add Item
         </button>
-      </div>
-
-      {/* Category Filter Pills */}
-      <div className="flex items-center gap-2 overflow-x-auto pb-1">
-        {categories.map(cat => {
-          const count = categoryCounts[cat] || 0;
-          const isSelected = selectedCategory === cat;
-          return (
-            <button
-              key={cat}
-              onClick={() => setSelectedCategory(cat)}
-              className={`text-xs px-3.5 py-2 rounded-xl font-medium whitespace-nowrap transition flex items-center gap-1.5 ${
-                isSelected
-                  ? 'bg-slate-900 text-white shadow-sm'
-                  : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-50'
-              }`}
-            >
-              <span>{cat === 'Protein' ? '🥩 Protein' : cat === 'Carbs' ? '🍚 Carbs' : cat === 'Greens' ? '🥦 Greens' : cat === 'Dairy' ? '🥛 Dairy' : cat === 'Condiments & Seasonings' ? '🧂 Seasonings' : cat === 'Fruits & Others' ? '🍎 Fruits' : 'All Items'}</span>
-              <span className={`text-[11px] px-1.5 py-0.2 rounded-full font-bold ${
-                isSelected ? 'bg-slate-700 text-white' : 'bg-slate-100 text-slate-600'
-              }`}>
-                {count}
-              </span>
-            </button>
-          );
-        })}
-      </div>
-
-      {/* Search Bar */}
-      <div className="bg-white p-3 rounded-2xl border border-slate-200 flex items-center gap-3">
-        <Search className="w-4 h-4 text-slate-400 ml-2" />
-        <input
-          type="text"
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          placeholder="Search items (e.g. Telur, Salmon, Beras, Brokoli)..."
-          className="w-full text-xs text-slate-800 placeholder-slate-400 focus:outline-none bg-transparent"
-        />
-        {searchQuery && (
-          <button onClick={() => setSearchQuery('')} className="p-1 text-slate-400 hover:text-slate-600">
-            <X className="w-3.5 h-3.5" />
-          </button>
-        )}
       </div>
 
       {/* MAIN INVENTORY TABLE */}
       <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm">
         <div className="overflow-x-auto">
-          <table className="w-full text-left text-xs">
+          <table className="w-full text-left text-xs table-fixed">
             <thead className="bg-slate-50 border-b border-slate-200 text-slate-500 uppercase tracking-wider text-[11px] font-bold">
               <tr>
-                <th className="py-3.5 px-4 w-1/3">Item Name</th>
-                <th className="py-3.5 px-4 w-1/4">Category</th>
-                <th className="py-3.5 px-4 w-1/3">Current Quantity & Unit</th>
-                <th className="py-3.5 px-4 text-right">Actions</th>
+                <th className="py-3.5 px-5 w-[38%]">Item Name</th>
+                <th className="py-3.5 px-4 w-[18%]">Category</th>
+                <th className="py-3.5 px-4 w-[30%]">Quantity & Unit</th>
+                <th className="py-3.5 px-5 w-[14%] text-right">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
@@ -217,7 +185,7 @@ export const FridgeView: React.FC = () => {
                     className={`transition group ${isOutOfStock ? 'bg-rose-50/30' : 'hover:bg-slate-50/70'}`}
                   >
                     {/* Item Name */}
-                    <td className="py-3 px-4 font-semibold text-slate-900">
+                    <td className="py-3 px-5 font-semibold text-slate-900">
                       <div>
                         <span className={`text-sm ${isOutOfStock ? 'text-rose-900 font-bold' : 'text-slate-900'}`}>
                           {item.name}
@@ -255,7 +223,7 @@ export const FridgeView: React.FC = () => {
                             step="any"
                             value={item.quantity}
                             onChange={(e) => updateFridgeQuantity(item.id, Number(e.target.value) || 0)}
-                            className={`w-16 text-center text-xs font-bold py-1 focus:outline-none ${
+                            className={`w-14 text-center text-xs font-bold py-1 focus:outline-none ${
                               isOutOfStock ? 'text-rose-600 bg-rose-50/50' : 'text-slate-800'
                             }`}
                           />
@@ -290,7 +258,7 @@ export const FridgeView: React.FC = () => {
                     </td>
 
                     {/* Actions */}
-                    <td className="py-3 px-4 text-right">
+                    <td className="py-3 px-5 text-right">
                       <div className="flex items-center justify-end gap-2">
                         <button
                           onClick={() => handleSendToShopping(item)}
