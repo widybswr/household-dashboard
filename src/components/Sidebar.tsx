@@ -20,8 +20,8 @@ export const Sidebar: React.FC = () => {
   const pendingBills = bills.filter(b => !b.isPaid).length;
   const pendingGroceries = shoppingItems.filter(s => !s.isCompleted).length;
   
-  // Fridge 0 stock count
-  const outOfStockCount = fridgeItems.filter(f => f.status === '0 Stock').length;
+  // Fridge items that are empty (quantity starts with 0)
+  const emptyStockCount = fridgeItems.filter(f => f.quantity.trim().startsWith('0')).length;
   
   // Overdue or due chores
   const today = new Date();
@@ -34,7 +34,7 @@ export const Sidebar: React.FC = () => {
   const navItems: { id: TabType; label: string; icon: React.ReactNode; badge?: number }[] = [
     { id: 'dashboard', label: 'Overview', icon: <LayoutDashboard className="w-5 h-5" /> },
     { id: 'meals', label: 'Meal Planner', icon: <UtensilsCrossed className="w-5 h-5" /> },
-    { id: 'fridge', label: 'Fridge Stock', icon: <Package className="w-5 h-5" />, badge: outOfStockCount },
+    { id: 'fridge', label: 'Food Stock', icon: <Package className="w-5 h-5" />, badge: emptyStockCount > 0 ? emptyStockCount : undefined },
     { id: 'art', label: 'ART & Chores', icon: <Sparkles className="w-5 h-5" />, badge: dueChores },
     { id: 'bills', label: 'Bills & Payments', icon: <CreditCard className="w-5 h-5" />, badge: pendingBills },
     { id: 'shopping', label: 'To-Buy & Groceries', icon: <ShoppingCart className="w-5 h-5" />, badge: pendingGroceries },

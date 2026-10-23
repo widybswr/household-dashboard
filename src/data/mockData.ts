@@ -52,125 +52,37 @@ export const initialRecipes: Recipe[] = [
 ];
 
 export const initialFridgeItems: FridgeItem[] = [
-  {
-    id: 'f1',
-    name: 'Telur Ayam Omega',
-    zone: 'Fridge',
-    category: 'Dairy & Eggs',
-    quantity: '10 butir',
-    status: 'In Stock',
-    notes: 'Bought from Superindo'
-  },
-  {
-    id: 'f2',
-    name: 'Susu UHT Full Cream',
-    zone: 'Fridge',
-    category: 'Dairy & Eggs',
-    quantity: '0.5 carton left',
-    status: 'Low Stock',
-    notes: 'Opened 2 days ago'
-  },
-  {
-    id: 'f3',
-    name: 'Keju Cheddar Kraft',
-    zone: 'Fridge',
-    category: 'Dairy & Eggs',
-    quantity: '0 block',
-    status: '0 Stock',
-    notes: 'Need for breakfast toast'
-  },
-  {
-    id: 'f4',
-    name: 'Salmon Fillet Fresh',
-    zone: 'Freezer',
-    category: 'Meat & Seafood',
-    quantity: '300 grams',
-    status: 'In Stock',
-    notes: 'For teriyaki'
-  },
-  {
-    id: 'f5',
-    name: 'Ayam Dada Fillet',
-    zone: 'Freezer',
-    category: 'Meat & Seafood',
-    quantity: '1 small portion',
-    status: 'Low Stock'
-  },
-  {
-    id: 'f6',
-    name: 'Daging Giling Sapi',
-    zone: 'Freezer',
-    category: 'Meat & Seafood',
-    quantity: '0 pack',
-    status: '0 Stock',
-    notes: 'Need for pasta / bolognese'
-  },
-  {
-    id: 'f7',
-    name: 'Brokoli Hijau',
-    zone: 'Fridge',
-    category: 'Produce & Veggies',
-    quantity: '1 bonggol',
-    status: 'In Stock'
-  },
-  {
-    id: 'f8',
-    name: 'Wortel Brastagi',
-    zone: 'Fridge',
-    category: 'Produce & Veggies',
-    quantity: '2 batang',
-    status: 'Low Stock'
-  },
-  {
-    id: 'f9',
-    name: 'Saus Teriyaki Kikkoman',
-    zone: 'Fridge',
-    category: 'Condiments & Sauces',
-    quantity: '1 bottle',
-    status: 'In Stock'
-  },
-  {
-    id: 'f10',
-    name: 'Mayonnaise Kewpie',
-    zone: 'Fridge',
-    category: 'Condiments & Sauces',
-    quantity: 'Empty',
-    status: "Don't Buy",
-    notes: 'Not consuming for now'
-  },
-  {
-    id: 'f11',
-    name: 'Beras Pandan Wangi',
-    zone: 'Pantry',
-    category: 'Pantry & Dry',
-    quantity: '5 kg sack',
-    status: 'In Stock'
-  },
-  {
-    id: 'f12',
-    name: 'Minyak Goreng 2L',
-    zone: 'Pantry',
-    category: 'Pantry & Dry',
-    quantity: '1 pouch',
-    status: 'In Stock'
-  },
-  {
-    id: 'f13',
-    name: 'Bawang Merah & Bawang Putih',
-    zone: 'Pantry',
-    category: 'Pantry & Dry',
-    quantity: 'Small bowl left',
-    status: 'Low Stock'
-  },
-  {
-    id: 'f14',
-    name: 'Selai Strawberry',
-    zone: 'Pantry',
-    category: 'Condiments & Sauces',
-    quantity: 'Finished',
-    status: "Don't Buy",
-    notes: 'Focusing on peanut butter instead'
-  }
+  // Protein
+  { id: 'f1', name: 'Telur Ayam Omega', category: 'Protein', quantity: '10 butir', notes: 'Superindo' },
+  { id: 'f2', name: 'Ayam Dada Fillet', category: 'Protein', quantity: '500g', notes: 'Freezer pack' },
+  { id: 'f3', name: 'Salmon Fillet', category: 'Protein', quantity: '300g', notes: 'Fresh' },
+  { id: 'f4', name: 'Daging Sapi Giling', category: 'Protein', quantity: '0 pack', notes: 'Finished' },
+  { id: 'f5', name: 'Tahu & Tempe Sutra', category: 'Protein', quantity: '2 blocks' },
+
+  // Carbs
+  { id: 'f6', name: 'Beras Pandan Wangi', category: 'Carbs', quantity: '4 kg' },
+  { id: 'f7', name: 'Roti Tawar Gandum', category: 'Carbs', quantity: '1 pack' },
+  { id: 'f8', name: 'Pasta Spaghetti', category: 'Carbs', quantity: '2 boxes' },
+  { id: 'f9', name: 'Rolled Oats Quaker', category: 'Carbs', quantity: '800g' },
+
+  // Greens
+  { id: 'f10', name: 'Brokoli Hijau', category: 'Greens', quantity: '1 bonggol' },
+  { id: 'f11', name: 'Wortel Brastagi', category: 'Greens', quantity: '3 pcs' },
+  { id: 'f12', name: 'Bayam Jepang (Horenso)', category: 'Greens', quantity: '1 ikat' },
+
+  // Dairy
+  { id: 'f13', name: 'Susu UHT Full Cream', category: 'Dairy', quantity: '1 liter' },
+  { id: 'f14', name: 'Keju Cheddar Kraft', category: 'Dairy', quantity: '0 block', notes: 'Need more' },
+  { id: 'f15', name: 'Greek Yogurt Plain', category: 'Dairy', quantity: '500g jar' },
+
+  // Condiments & Seasonings
+  { id: 'f16', name: 'Bawang Merah & Putih', category: 'Condiments & Seasonings', quantity: '250g' },
+  { id: 'f17', name: 'Minyak Goreng Sawit', category: 'Condiments & Seasonings', quantity: '2 liters' },
+  { id: 'f18', name: 'Saus Teriyaki Kikkoman', category: 'Condiments & Seasonings', quantity: '1 bottle' },
+
+  // Fruits & Others
+  { id: 'f19', name: 'Pisang Cavendish', category: 'Fruits & Others', quantity: '1 sisir' },
+  { id: 'f20', name: 'Apel Fuji', category: 'Fruits & Others', quantity: '4 pcs' }
 ];
 
 export const initialArtTasks: ArtTask[] = [

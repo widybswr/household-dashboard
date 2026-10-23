@@ -8,8 +8,7 @@ import {
   ShoppingItem, 
   RenovationItem, 
   ApartmentInfo,
-  FridgeItem,
-  StockStatus
+  FridgeItem
 } from '../types';
 import { 
   initialMealPlan, 
@@ -39,7 +38,7 @@ interface HouseholdContextType {
   fridgeItems: FridgeItem[];
   addFridgeItem: (item: Omit<FridgeItem, 'id'>) => void;
   updateFridgeItem: (id: string, updates: Partial<FridgeItem>) => void;
-  updateStockStatus: (id: string, status: StockStatus) => void;
+  updateFridgeQuantity: (id: string, quantity: string) => void;
   deleteFridgeItem: (id: string) => void;
   sendFridgeItemToShopping: (item: FridgeItem) => void;
 
@@ -160,8 +159,8 @@ export const HouseholdProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     setFridgeItems(prev => prev.map(f => f.id === id ? { ...f, ...updates } : f));
   };
 
-  const updateStockStatus = (id: string, status: StockStatus) => {
-    setFridgeItems(prev => prev.map(f => f.id === id ? { ...f, status } : f));
+  const updateFridgeQuantity = (id: string, quantity: string) => {
+    setFridgeItems(prev => prev.map(f => f.id === id ? { ...f, quantity } : f));
   };
 
   const deleteFridgeItem = (id: string) => {
@@ -169,22 +168,16 @@ export const HouseholdProvider: React.FC<{ children: React.ReactNode }> = ({ chi
   };
 
   const sendFridgeItemToShopping = (item: FridgeItem) => {
-    const cat = item.category === 'Produce & Veggies' || item.category === 'Meat & Seafood' || item.category === 'Dairy & Eggs' 
+    const cat = item.category === 'Greens' || item.category === 'Protein' || item.category === 'Dairy' || item.category === 'Fruits & Others' 
       ? 'Groceries' 
       : 'Pantry Staples';
     
-    // Add to shopping items if not already existing
     addShoppingItem({
       title: item.name,
       category: cat,
       quantity: item.quantity,
       urgency: 'routine'
     });
-
-    // Mark as 0 Stock if needed
-    if (item.status === 'In Stock') {
-      updateFridgeItem(item.id, { status: '0 Stock' });
-    }
   };
 
   // ART Tasks Actions
@@ -275,7 +268,7 @@ export const HouseholdProvider: React.FC<{ children: React.ReactNode }> = ({ chi
         fridgeItems,
         addFridgeItem,
         updateFridgeItem,
-        updateStockStatus,
+        updateFridgeQuantity,
         deleteFridgeItem,
         sendFridgeItemToShopping,
         artTasks,

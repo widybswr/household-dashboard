@@ -26,15 +26,19 @@ export interface Recipe {
   tags: string[];
 }
 
-export type StockStatus = 'In Stock' | 'Low Stock' | '0 Stock' | "Don't Buy";
+export type FoodCategory = 
+  | 'Protein' 
+  | 'Carbs' 
+  | 'Greens' 
+  | 'Dairy' 
+  | 'Condiments & Seasonings' 
+  | 'Fruits & Others';
 
 export interface FridgeItem {
   id: string;
   name: string;
-  zone: 'Fridge' | 'Freezer' | 'Pantry';
-  category: 'Dairy & Eggs' | 'Meat & Seafood' | 'Produce & Veggies' | 'Condiments & Sauces' | 'Pantry & Dry' | 'Other';
+  category: FoodCategory;
   quantity: string;
-  status: StockStatus;
   notes?: string;
 }
 
