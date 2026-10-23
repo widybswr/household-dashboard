@@ -53,36 +53,36 @@ export const initialRecipes: Recipe[] = [
 
 export const initialFridgeItems: FridgeItem[] = [
   // Protein
-  { id: 'f1', name: 'Telur Ayam Omega', category: 'Protein', quantity: '10 butir', notes: 'Superindo' },
-  { id: 'f2', name: 'Ayam Dada Fillet', category: 'Protein', quantity: '500g', notes: 'Freezer pack' },
-  { id: 'f3', name: 'Salmon Fillet', category: 'Protein', quantity: '300g', notes: 'Fresh' },
-  { id: 'f4', name: 'Daging Sapi Giling', category: 'Protein', quantity: '0 pack', notes: 'Finished' },
-  { id: 'f5', name: 'Tahu & Tempe Sutra', category: 'Protein', quantity: '2 blocks' },
+  { id: 'f1', name: 'Telur Ayam Omega', category: 'Protein', quantity: 10, unit: 'pcs / butir', notes: 'Superindo pack' },
+  { id: 'f2', name: 'Ayam Dada Fillet', category: 'Protein', quantity: 500, unit: 'gram', notes: 'Freezer pack' },
+  { id: 'f3', name: 'Salmon Fillet Fresh', category: 'Protein', quantity: 300, unit: 'gram', notes: 'Wild caught' },
+  { id: 'f4', name: 'Daging Sapi Giling', category: 'Protein', quantity: 0, unit: 'pack', notes: 'Finished / Need for pasta' },
+  { id: 'f5', name: 'Tahu & Tempe Sutra', category: 'Protein', quantity: 2, unit: 'pack' },
 
   // Carbs
-  { id: 'f6', name: 'Beras Pandan Wangi', category: 'Carbs', quantity: '4 kg' },
-  { id: 'f7', name: 'Roti Tawar Gandum', category: 'Carbs', quantity: '1 pack' },
-  { id: 'f8', name: 'Pasta Spaghetti', category: 'Carbs', quantity: '2 boxes' },
-  { id: 'f9', name: 'Rolled Oats Quaker', category: 'Carbs', quantity: '800g' },
+  { id: 'f6', name: 'Beras Pandan Wangi', category: 'Carbs', quantity: 5, unit: 'kg' },
+  { id: 'f7', name: 'Roti Tawar Gandum', category: 'Carbs', quantity: 1, unit: 'pack' },
+  { id: 'f8', name: 'Pasta Spaghetti Barilla', category: 'Carbs', quantity: 2, unit: 'box' },
+  { id: 'f9', name: 'Rolled Oats Quaker', category: 'Carbs', quantity: 800, unit: 'gram' },
 
   // Greens
-  { id: 'f10', name: 'Brokoli Hijau', category: 'Greens', quantity: '1 bonggol' },
-  { id: 'f11', name: 'Wortel Brastagi', category: 'Greens', quantity: '3 pcs' },
-  { id: 'f12', name: 'Bayam Jepang (Horenso)', category: 'Greens', quantity: '1 ikat' },
+  { id: 'f10', name: 'Brokoli Hijau Segar', category: 'Greens', quantity: 1, unit: 'bonggol' },
+  { id: 'f11', name: 'Wortel Brastagi', category: 'Greens', quantity: 3, unit: 'pcs / butir' },
+  { id: 'f12', name: 'Bayam Jepang (Horenso)', category: 'Greens', quantity: 1, unit: 'ikat' },
 
   // Dairy
-  { id: 'f13', name: 'Susu UHT Full Cream', category: 'Dairy', quantity: '1 liter' },
-  { id: 'f14', name: 'Keju Cheddar Kraft', category: 'Dairy', quantity: '0 block', notes: 'Need more' },
-  { id: 'f15', name: 'Greek Yogurt Plain', category: 'Dairy', quantity: '500g jar' },
+  { id: 'f13', name: 'Susu UHT Full Cream', category: 'Dairy', quantity: 1, unit: 'liter' },
+  { id: 'f14', name: 'Keju Cheddar Kraft', category: 'Dairy', quantity: 0, unit: 'pack', notes: 'Need more for breakfast' },
+  { id: 'f15', name: 'Greek Yogurt Plain', category: 'Dairy', quantity: 500, unit: 'gram' },
 
   // Condiments & Seasonings
-  { id: 'f16', name: 'Bawang Merah & Putih', category: 'Condiments & Seasonings', quantity: '250g' },
-  { id: 'f17', name: 'Minyak Goreng Sawit', category: 'Condiments & Seasonings', quantity: '2 liters' },
-  { id: 'f18', name: 'Saus Teriyaki Kikkoman', category: 'Condiments & Seasonings', quantity: '1 bottle' },
+  { id: 'f16', name: 'Bawang Merah & Putih', category: 'Condiments & Seasonings', quantity: 250, unit: 'gram' },
+  { id: 'f17', name: 'Minyak Goreng 2L', category: 'Condiments & Seasonings', quantity: 2, unit: 'liter' },
+  { id: 'f18', name: 'Saus Teriyaki Kikkoman', category: 'Condiments & Seasonings', quantity: 1, unit: 'bottle' },
 
   // Fruits & Others
-  { id: 'f19', name: 'Pisang Cavendish', category: 'Fruits & Others', quantity: '1 sisir' },
-  { id: 'f20', name: 'Apel Fuji', category: 'Fruits & Others', quantity: '4 pcs' }
+  { id: 'f19', name: 'Pisang Cavendish', category: 'Fruits & Others', quantity: 1, unit: 'pack' },
+  { id: 'f20', name: 'Apel Fuji', category: 'Fruits & Others', quantity: 4, unit: 'pcs / butir' }
 ];
 
 export const initialArtTasks: ArtTask[] = [

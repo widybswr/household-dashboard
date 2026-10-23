@@ -34,11 +34,25 @@ export type FoodCategory =
   | 'Condiments & Seasonings' 
   | 'Fruits & Others';
 
+export type FoodUnit = 
+  | 'pcs / butir' 
+  | 'kg' 
+  | 'gram' 
+  | 'liter' 
+  | 'ml' 
+  | 'pack' 
+  | 'bottle' 
+  | 'can' 
+  | 'bonggol' 
+  | 'ikat' 
+  | 'box';
+
 export interface FridgeItem {
   id: string;
   name: string;
   category: FoodCategory;
-  quantity: string;
+  quantity: number;
+  unit: FoodUnit;
   notes?: string;
 }
 
