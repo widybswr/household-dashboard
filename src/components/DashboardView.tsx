@@ -155,14 +155,14 @@ export const DashboardView: React.FC = () => {
           </div>
         </div>
 
-        {/* Card 2: Recurring ART Tasks Due */}
+        {/* Card 2: Cleaning & Maintenance Due */}
         <div className="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-sm flex flex-col">
           <div className="flex items-center justify-between pb-3 border-b border-slate-100 mb-4">
             <div className="flex items-center gap-2">
               <div className="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-600 flex items-center justify-center">
                 <Sparkles className="w-4 h-4" />
               </div>
-              <h3 className="font-semibold text-slate-800">Recurring Chores</h3>
+              <h3 className="font-semibold text-slate-800">Cleaning & Maintenance</h3>
             </div>
             <button 
               onClick={() => setActiveTab('art')}

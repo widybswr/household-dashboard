@@ -45,10 +45,11 @@ interface HouseholdContextType {
   deleteFridgeItem: (id: string) => void;
   sendFridgeItemToShopping: (item: FridgeItem) => void;
 
-  // ART Tasks
+  // ART / Cleaning Tasks
   artTasks: ArtTask[];
   completeArtTask: (id: string) => void;
-  addArtTask: (task: Omit<ArtTask, 'id' | 'lastDoneDate'>) => void;
+  addArtTask: (task: Omit<ArtTask, 'id' | 'lastDoneDate'> & { lastDoneDate?: string }) => void;
+  updateArtTask: (id: string, updates: Partial<ArtTask>) => void;
   deleteArtTask: (id: string) => void;
 
   // Bills
@@ -207,19 +208,23 @@ export const HouseholdProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     });
   };
 
-  // ART Tasks Actions
+  // Cleaning & Maintenance Tasks Actions
   const completeArtTask = (id: string) => {
     const today = new Date().toISOString().split('T')[0];
     setArtTasks(prev => prev.map(t => t.id === id ? { ...t, lastDoneDate: today } : t));
   };
 
-  const addArtTask = (task: Omit<ArtTask, 'id' | 'lastDoneDate'>) => {
+  const addArtTask = (task: Omit<ArtTask, 'id' | 'lastDoneDate'> & { lastDoneDate?: string }) => {
     const newTask: ArtTask = {
       ...task,
       id: 't_' + Date.now(),
-      lastDoneDate: new Date().toISOString().split('T')[0]
+      lastDoneDate: task.lastDoneDate || new Date().toISOString().split('T')[0]
     };
     setArtTasks(prev => [...prev, newTask]);
+  };
+
+  const updateArtTask = (id: string, updates: Partial<ArtTask>) => {
+    setArtTasks(prev => prev.map(t => t.id === id ? { ...t, ...updates } : t));
   };
 
   const deleteArtTask = (id: string) => {
@@ -304,6 +309,7 @@ export const HouseholdProvider: React.FC<{ children: React.ReactNode }> = ({ chi
         artTasks,
         completeArtTask,
         addArtTask,
+        updateArtTask,
         deleteArtTask,
         bills,
         toggleBillPaid,

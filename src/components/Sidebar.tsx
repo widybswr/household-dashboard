@@ -7,14 +7,13 @@ import {
   CreditCard, 
   ShoppingCart, 
   Building2, 
-  Hammer,
-  HeartHandshake
+  Hammer
 } from 'lucide-react';
 import { useHousehold } from '../context/HouseholdContext';
 import { TabType } from '../types';
 
 export const Sidebar: React.FC = () => {
-  const { activeTab, setActiveTab, helperMode, setHelperMode, artTasks, bills, shoppingItems, fridgeItems } = useHousehold();
+  const { activeTab, setActiveTab, artTasks, bills, shoppingItems, fridgeItems } = useHousehold();
 
   // Calculate badges
   const pendingBills = bills.filter(b => !b.isPaid).length;
@@ -35,7 +34,7 @@ export const Sidebar: React.FC = () => {
     { id: 'dashboard', label: 'Overview', icon: <LayoutDashboard className="w-5 h-5" /> },
     { id: 'meals', label: 'Meal Ideas', icon: <UtensilsCrossed className="w-5 h-5" /> },
     { id: 'fridge', label: 'Food Stock', icon: <Package className="w-5 h-5" />, badge: emptyStockCount > 0 ? emptyStockCount : undefined },
-    { id: 'art', label: 'ART & Chores', icon: <Sparkles className="w-5 h-5" />, badge: dueChores },
+    { id: 'art', label: 'Cleaning & Maintenance', icon: <Sparkles className="w-5 h-5" />, badge: dueChores },
     { id: 'bills', label: 'Bills & Payments', icon: <CreditCard className="w-5 h-5" />, badge: pendingBills },
     { id: 'shopping', label: 'To-Buy & Groceries', icon: <ShoppingCart className="w-5 h-5" />, badge: pendingGroceries },
     { id: 'apt', label: 'Apartment Manual', icon: <Building2 className="w-5 h-5" /> },
@@ -54,26 +53,6 @@ export const Sidebar: React.FC = () => {
             <p className="text-xs text-slate-500">Household & Meals</p>
           </div>
         </div>
-      </div>
-
-      {/* Helper Mode Banner in Sidebar */}
-      <div className="px-4 py-3 bg-amber-50/70 border-b border-amber-100/70 mx-3 my-3 rounded-xl flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <HeartHandshake className="w-4 h-4 text-amber-600" />
-          <span className="text-xs font-semibold text-amber-900">ART Helper View</span>
-        </div>
-        <button
-          onClick={() => setHelperMode(!helperMode)}
-          className={`relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
-            helperMode ? 'bg-amber-600' : 'bg-slate-300'
-          }`}
-        >
-          <span
-            className={`pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${
-              helperMode ? 'translate-x-4' : 'translate-x-0'
-            }`}
-          />
-        </button>
       </div>
 
       <nav className="p-3 space-y-1 flex-1 overflow-y-auto">
