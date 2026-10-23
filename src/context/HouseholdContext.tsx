@@ -8,7 +8,8 @@ import {
   ShoppingItem, 
   RenovationItem, 
   ApartmentInfo,
-  FridgeItem
+  FridgeItem,
+  StockStatus
 } from '../types';
 import { 
   initialMealPlan, 
@@ -38,6 +39,7 @@ interface HouseholdContextType {
   fridgeItems: FridgeItem[];
   addFridgeItem: (item: Omit<FridgeItem, 'id'>) => void;
   updateFridgeItem: (id: string, updates: Partial<FridgeItem>) => void;
+  updateStockStatus: (id: string, status: StockStatus) => void;
   deleteFridgeItem: (id: string) => void;
   sendFridgeItemToShopping: (item: FridgeItem) => void;
 
@@ -158,6 +160,10 @@ export const HouseholdProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     setFridgeItems(prev => prev.map(f => f.id === id ? { ...f, ...updates } : f));
   };
 
+  const updateStockStatus = (id: string, status: StockStatus) => {
+    setFridgeItems(prev => prev.map(f => f.id === id ? { ...f, status } : f));
+  };
+
   const deleteFridgeItem = (id: string) => {
     setFridgeItems(prev => prev.filter(f => f.id !== id));
   };
@@ -175,8 +181,10 @@ export const HouseholdProvider: React.FC<{ children: React.ReactNode }> = ({ chi
       urgency: 'routine'
     });
 
-    // Mark as low stock
-    updateFridgeItem(item.id, { isLowStock: true });
+    // Mark as 0 Stock if needed
+    if (item.status === 'In Stock') {
+      updateFridgeItem(item.id, { status: '0 Stock' });
+    }
   };
 
   // ART Tasks Actions
@@ -267,6 +275,7 @@ export const HouseholdProvider: React.FC<{ children: React.ReactNode }> = ({ chi
         fridgeItems,
         addFridgeItem,
         updateFridgeItem,
+        updateStockStatus,
         deleteFridgeItem,
         sendFridgeItemToShopping,
         artTasks,

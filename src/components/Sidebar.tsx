@@ -20,15 +20,11 @@ export const Sidebar: React.FC = () => {
   const pendingBills = bills.filter(b => !b.isPaid).length;
   const pendingGroceries = shoppingItems.filter(s => !s.isCompleted).length;
   
-  // Fridge expiring soon (<= 3 days)
-  const today = new Date();
-  const expiringFoodCount = fridgeItems.filter(f => {
-    const exp = new Date(f.expiryDate);
-    const diffDays = Math.ceil((exp.getTime() - today.getTime()) / (1000 * 3600 * 24));
-    return diffDays <= 3;
-  }).length;
+  // Fridge 0 stock count
+  const outOfStockCount = fridgeItems.filter(f => f.status === '0 Stock').length;
   
   // Overdue or due chores
+  const today = new Date();
   const dueChores = artTasks.filter(task => {
     const last = new Date(task.lastDoneDate);
     const diffDays = Math.floor((today.getTime() - last.getTime()) / (1000 * 3600 * 24));
@@ -38,7 +34,7 @@ export const Sidebar: React.FC = () => {
   const navItems: { id: TabType; label: string; icon: React.ReactNode; badge?: number }[] = [
     { id: 'dashboard', label: 'Overview', icon: <LayoutDashboard className="w-5 h-5" /> },
     { id: 'meals', label: 'Meal Planner', icon: <UtensilsCrossed className="w-5 h-5" /> },
-    { id: 'fridge', label: 'Fridge & Stock', icon: <Package className="w-5 h-5" />, badge: expiringFoodCount },
+    { id: 'fridge', label: 'Fridge Stock', icon: <Package className="w-5 h-5" />, badge: outOfStockCount },
     { id: 'art', label: 'ART & Chores', icon: <Sparkles className="w-5 h-5" />, badge: dueChores },
     { id: 'bills', label: 'Bills & Payments', icon: <CreditCard className="w-5 h-5" />, badge: pendingBills },
     { id: 'shopping', label: 'To-Buy & Groceries', icon: <ShoppingCart className="w-5 h-5" />, badge: pendingGroceries },
@@ -102,7 +98,7 @@ export const Sidebar: React.FC = () => {
               {item.badge !== undefined && item.badge > 0 && (
                 <span
                   className={`text-xs px-2 py-0.5 rounded-full font-bold ${
-                    item.id === 'bills' 
+                    item.id === 'bills' || item.id === 'fridge' 
                       ? 'bg-rose-100 text-rose-700' 
                       : item.id === 'art'
                       ? 'bg-amber-100 text-amber-800'

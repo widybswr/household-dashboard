@@ -26,14 +26,15 @@ export interface Recipe {
   tags: string[];
 }
 
+export type StockStatus = 'In Stock' | 'Low Stock' | '0 Stock' | "Don't Buy";
+
 export interface FridgeItem {
   id: string;
   name: string;
   zone: 'Fridge' | 'Freezer' | 'Pantry';
-  category: 'Produce & Veggies' | 'Meat & Seafood' | 'Dairy & Eggs' | 'Condiments & Sauces' | 'Pantry & Dry';
+  category: 'Dairy & Eggs' | 'Meat & Seafood' | 'Produce & Veggies' | 'Condiments & Sauces' | 'Pantry & Dry' | 'Other';
   quantity: string;
-  expiryDate: string; // YYYY-MM-DD
-  isLowStock?: boolean;
+  status: StockStatus;
   notes?: string;
 }
 
@@ -41,7 +42,7 @@ export interface ArtTask {
   id: string;
   title: string;
   room: string;
-  frequencyDays: number; // e.g. 7 = every week, 14 = every 2 weeks
+  frequencyDays: number;
   lastDoneDate: string; // ISO date string YYYY-MM-DD
   assignedTo: 'ART / Helper' | 'Self / Partner' | 'Deep Clean';
   notes?: string;

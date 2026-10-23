@@ -9,7 +9,7 @@ export const Header: React.FC = () => {
     switch (activeTab) {
       case 'dashboard': return 'Household Hub';
       case 'meals': return 'Weekly Meal Planner & Recipes';
-      case 'fridge': return 'Fridge Stocks & Smart Meal Suggestions';
+      case 'fridge': return 'Fridge & Pantry Stock Table';
       case 'art': return 'ART Routine & Recurring Chores';
       case 'bills': return 'Monthly Bills & Payment Dates';
       case 'shopping': return 'Needs & Shopping List';

@@ -48,110 +48,128 @@ export const initialRecipes: Recipe[] = [
     cookTimeMins: 25,
     ingredients: ['Wortel', 'Kembang kol', 'Sawi putih', 'Bakso sapi', 'Bawang putih', 'Minyak wijen'],
     tags: ['Veggies', 'Comfort Food']
-  },
-  {
-    id: 'r4',
-    title: 'Telur Dadar Sayur & Nasi Hangat',
-    category: 'Quick & Easy',
-    cookTimeMins: 10,
-    ingredients: ['Telur', 'Bawang merah', 'Wortel', 'Beras'],
-    tags: ['Emergency 10-Min Meal', 'High Protein']
   }
 ];
 
 export const initialFridgeItems: FridgeItem[] = [
   {
     id: 'f1',
-    name: 'Salmon Fillet Fresh',
+    name: 'Telur Ayam Omega',
     zone: 'Fridge',
-    category: 'Meat & Seafood',
-    quantity: '300 grams',
-    expiryDate: '2026-10-25', // 2 days from today
-    isLowStock: false,
-    notes: 'Use soon for Teriyaki bowl!'
+    category: 'Dairy & Eggs',
+    quantity: '10 butir',
+    status: 'In Stock',
+    notes: 'Bought from Superindo'
   },
   {
     id: 'f2',
     name: 'Susu UHT Full Cream',
     zone: 'Fridge',
     category: 'Dairy & Eggs',
-    quantity: '0.5 liter remaining',
-    expiryDate: '2026-10-24', // tomorrow
-    isLowStock: true,
-    notes: 'Already opened'
+    quantity: '0.5 carton left',
+    status: 'Low Stock',
+    notes: 'Opened 2 days ago'
   },
   {
     id: 'f3',
+    name: 'Keju Cheddar Kraft',
+    zone: 'Fridge',
+    category: 'Dairy & Eggs',
+    quantity: '0 block',
+    status: '0 Stock',
+    notes: 'Need for breakfast toast'
+  },
+  {
+    id: 'f4',
+    name: 'Salmon Fillet Fresh',
+    zone: 'Freezer',
+    category: 'Meat & Seafood',
+    quantity: '300 grams',
+    status: 'In Stock',
+    notes: 'For teriyaki'
+  },
+  {
+    id: 'f5',
+    name: 'Ayam Dada Fillet',
+    zone: 'Freezer',
+    category: 'Meat & Seafood',
+    quantity: '1 small portion',
+    status: 'Low Stock'
+  },
+  {
+    id: 'f6',
+    name: 'Daging Giling Sapi',
+    zone: 'Freezer',
+    category: 'Meat & Seafood',
+    quantity: '0 pack',
+    status: '0 Stock',
+    notes: 'Need for pasta / bolognese'
+  },
+  {
+    id: 'f7',
     name: 'Brokoli Hijau',
     zone: 'Fridge',
     category: 'Produce & Veggies',
     quantity: '1 bonggol',
-    expiryDate: '2026-10-26',
-    isLowStock: false
-  },
-  {
-    id: 'f4',
-    name: 'Telur Ayam Omega',
-    zone: 'Fridge',
-    category: 'Dairy & Eggs',
-    quantity: '8 butir',
-    expiryDate: '2026-11-08',
-    isLowStock: false
-  },
-  {
-    id: 'f5',
-    name: 'Saus Teriyaki Kikkoman',
-    zone: 'Fridge',
-    category: 'Condiments & Sauces',
-    quantity: '1 bottle (70% full)',
-    expiryDate: '2027-03-15',
-    isLowStock: false
-  },
-  {
-    id: 'f6',
-    name: 'Ayam Dada Fillet (Frozen)',
-    zone: 'Freezer',
-    category: 'Meat & Seafood',
-    quantity: '1 kg (2 packs)',
-    expiryDate: '2026-11-30',
-    isLowStock: false,
-    notes: 'Move to chiller the night before cooking'
-  },
-  {
-    id: 'f7',
-    name: 'Bakso Sapi Sumber Selera',
-    zone: 'Freezer',
-    category: 'Meat & Seafood',
-    quantity: '1 pack (25 pcs)',
-    expiryDate: '2026-12-15',
-    isLowStock: false
+    status: 'In Stock'
   },
   {
     id: 'f8',
-    name: 'Beras Pandan Wangi',
-    zone: 'Pantry',
-    category: 'Pantry & Dry',
-    quantity: '4 kg remaining',
-    expiryDate: '2027-04-01',
-    isLowStock: false
-  },
-  {
-    id: 'f9',
-    name: 'Bawang Merah & Bawang Putih',
-    zone: 'Pantry',
-    category: 'Pantry & Dry',
-    quantity: '250 grams each',
-    expiryDate: '2026-11-15',
-    isLowStock: false
-  },
-  {
-    id: 'f10',
     name: 'Wortel Brastagi',
     zone: 'Fridge',
     category: 'Produce & Veggies',
-    quantity: '3 batang',
-    expiryDate: '2026-10-29',
-    isLowStock: false
+    quantity: '2 batang',
+    status: 'Low Stock'
+  },
+  {
+    id: 'f9',
+    name: 'Saus Teriyaki Kikkoman',
+    zone: 'Fridge',
+    category: 'Condiments & Sauces',
+    quantity: '1 bottle',
+    status: 'In Stock'
+  },
+  {
+    id: 'f10',
+    name: 'Mayonnaise Kewpie',
+    zone: 'Fridge',
+    category: 'Condiments & Sauces',
+    quantity: 'Empty',
+    status: "Don't Buy",
+    notes: 'Not consuming for now'
+  },
+  {
+    id: 'f11',
+    name: 'Beras Pandan Wangi',
+    zone: 'Pantry',
+    category: 'Pantry & Dry',
+    quantity: '5 kg sack',
+    status: 'In Stock'
+  },
+  {
+    id: 'f12',
+    name: 'Minyak Goreng 2L',
+    zone: 'Pantry',
+    category: 'Pantry & Dry',
+    quantity: '1 pouch',
+    status: 'In Stock'
+  },
+  {
+    id: 'f13',
+    name: 'Bawang Merah & Bawang Putih',
+    zone: 'Pantry',
+    category: 'Pantry & Dry',
+    quantity: 'Small bowl left',
+    status: 'Low Stock'
+  },
+  {
+    id: 'f14',
+    name: 'Selai Strawberry',
+    zone: 'Pantry',
+    category: 'Condiments & Sauces',
+    quantity: 'Finished',
+    status: "Don't Buy",
+    notes: 'Focusing on peanut butter instead'
   }
 ];
 
