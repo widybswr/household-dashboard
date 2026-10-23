@@ -20,8 +20,8 @@ export const Sidebar: React.FC = () => {
   const pendingBills = bills.filter(b => !b.isPaid).length;
   const pendingGroceries = shoppingItems.filter(s => !s.isCompleted).length;
   
-  // Fridge items that are empty (quantity === 0)
-  const emptyStockCount = fridgeItems.filter(f => f.quantity === 0).length;
+  // Fridge items that are empty (Udah Abis)
+  const emptyStockCount = fridgeItems.filter(f => !f.isAvailable).length;
   
   // Overdue or due chores
   const today = new Date();

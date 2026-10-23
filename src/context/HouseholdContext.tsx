@@ -8,8 +8,7 @@ import {
   ShoppingItem, 
   RenovationItem, 
   ApartmentInfo,
-  FridgeItem,
-  FoodUnit
+  FridgeItem
 } from '../types';
 import { 
   initialMealPlan, 
@@ -39,8 +38,8 @@ interface HouseholdContextType {
   fridgeItems: FridgeItem[];
   addFridgeItem: (item: Omit<FridgeItem, 'id'>) => void;
   updateFridgeItem: (id: string, updates: Partial<FridgeItem>) => void;
-  updateFridgeQuantity: (id: string, quantity: number) => void;
-  updateFridgeUnit: (id: string, unit: FoodUnit) => void;
+  toggleItemAvailability: (id: string) => void;
+  updateItemNote: (id: string, note: string) => void;
   deleteFridgeItem: (id: string) => void;
   sendFridgeItemToShopping: (item: FridgeItem) => void;
 
@@ -90,9 +89,9 @@ export const HouseholdProvider: React.FC<{ children: React.ReactNode }> = ({ chi
   });
 
   const [fridgeItems, setFridgeItems] = useState<FridgeItem[]>(() => {
-    const version = localStorage.getItem('home_fridge_version_v3');
+    const version = localStorage.getItem('home_fridge_version_v4');
     if (!version) {
-      localStorage.setItem('home_fridge_version_v3', 'active');
+      localStorage.setItem('home_fridge_version_v4', 'active');
       localStorage.setItem('home_fridge', JSON.stringify(initialFridgeItems));
       return initialFridgeItems;
     }
@@ -167,12 +166,12 @@ export const HouseholdProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     setFridgeItems(prev => prev.map(f => f.id === id ? { ...f, ...updates } : f));
   };
 
-  const updateFridgeQuantity = (id: string, quantity: number) => {
-    setFridgeItems(prev => prev.map(f => f.id === id ? { ...f, quantity: Math.max(0, quantity) } : f));
+  const toggleItemAvailability = (id: string) => {
+    setFridgeItems(prev => prev.map(f => f.id === id ? { ...f, isAvailable: !f.isAvailable } : f));
   };
 
-  const updateFridgeUnit = (id: string, unit: FoodUnit) => {
-    setFridgeItems(prev => prev.map(f => f.id === id ? { ...f, unit } : f));
+  const updateItemNote = (id: string, note: string) => {
+    setFridgeItems(prev => prev.map(f => f.id === id ? { ...f, note } : f));
   };
 
   const deleteFridgeItem = (id: string) => {
@@ -187,7 +186,7 @@ export const HouseholdProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     addShoppingItem({
       title: item.name,
       category: cat,
-      quantity: `${item.quantity > 0 ? item.quantity : 1} ${item.unit}`,
+      quantity: item.note || '1 pack',
       urgency: 'routine'
     });
   };
@@ -280,8 +279,8 @@ export const HouseholdProvider: React.FC<{ children: React.ReactNode }> = ({ chi
         fridgeItems,
         addFridgeItem,
         updateFridgeItem,
-        updateFridgeQuantity,
-        updateFridgeUnit,
+        toggleItemAvailability,
+        updateItemNote,
         deleteFridgeItem,
         sendFridgeItemToShopping,
         artTasks,

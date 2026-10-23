@@ -34,26 +34,12 @@ export type FoodCategory =
   | 'Condiments & Seasonings' 
   | 'Fruits & Others';
 
-export type FoodUnit = 
-  | 'pcs / butir' 
-  | 'kg' 
-  | 'gram' 
-  | 'liter' 
-  | 'ml' 
-  | 'pack' 
-  | 'bottle' 
-  | 'can' 
-  | 'bonggol' 
-  | 'ikat' 
-  | 'box';
-
 export interface FridgeItem {
   id: string;
   name: string;
   category: FoodCategory;
-  quantity: number;
-  unit: FoodUnit;
-  notes?: string;
+  isAvailable: boolean; // true = "Masih Ada", false = "Abis"
+  note?: string; // Optional detail (e.g. "sisa dikit", "1 pack", "banyak")
 }
 
 export interface ArtTask {

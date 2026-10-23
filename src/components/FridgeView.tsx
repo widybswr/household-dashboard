@@ -1,39 +1,36 @@
 import React, { useState } from 'react';
 import { useHousehold } from '../context/HouseholdContext';
-import { FridgeItem, FoodCategory, FoodUnit } from '../types';
+import { FridgeItem, FoodCategory } from '../types';
 import { 
   Plus, 
-  Minus, 
   Trash2, 
   ShoppingCart, 
   CheckCircle2, 
+  XCircle, 
   X,
-  AlertCircle
+  Edit2
 } from 'lucide-react';
 
 export const FridgeView: React.FC = () => {
   const { 
     fridgeItems, 
     addFridgeItem, 
-    updateFridgeQuantity, 
-    updateFridgeUnit,
+    toggleItemAvailability,
+    updateItemNote,
     deleteFridgeItem, 
     sendFridgeItemToShopping 
   } = useHousehold();
 
-  const [selectedCategory, setSelectedCategory] = useState<string>('All');
+  // Strictly category-based: No "All" tab. Defaults to Protein
+  const [selectedCategory, setSelectedCategory] = useState<FoodCategory>('Protein');
   const [showAddModal, setShowAddModal] = useState(false);
   const [floatingToast, setFloatingToast] = useState<string | null>(null);
 
   // Add Item Form state
   const [name, setName] = useState('');
-  const [category, setCategory] = useState<FoodCategory>('Protein');
-  const [amount, setAmount] = useState<number>(1);
-  const [unit, setUnit] = useState<FoodUnit>('pcs / butir');
-  const [notes, setNotes] = useState('');
+  const [note, setNote] = useState('');
 
-  const categories: string[] = [
-    'All',
+  const categories: FoodCategory[] = [
     'Protein',
     'Carbs',
     'Greens',
@@ -42,35 +39,15 @@ export const FridgeView: React.FC = () => {
     'Fruits & Others'
   ];
 
-  const availableUnits: FoodUnit[] = [
-    'pcs / butir',
-    'kg',
-    'gram',
-    'liter',
-    'ml',
-    'pack',
-    'bottle',
-    'can',
-    'bonggol',
-    'ikat',
-    'box'
-  ];
+  // Filter items strictly by selected category
+  const filteredItems = fridgeItems.filter(item => item.category === selectedCategory);
 
   // Category counts
-  const categoryCounts = categories.reduce((acc, cat) => {
-    if (cat === 'All') {
-      acc[cat] = fridgeItems.length;
-    } else {
-      acc[cat] = fridgeItems.filter(f => f.category === cat).length;
-    }
-    return acc;
-  }, {} as Record<string, number>);
-
-  // Filter items
-  const filteredItems = fridgeItems.filter(item => {
-    if (selectedCategory !== 'All' && item.category !== selectedCategory) return false;
-    return true;
-  });
+  const getCategoryCount = (cat: FoodCategory) => {
+    const items = fridgeItems.filter(f => f.category === cat);
+    const inStock = items.filter(f => f.isAvailable).length;
+    return { total: items.length, inStock };
+  };
 
   const handleCreateItem = (e: React.FormEvent) => {
     e.preventDefault();
@@ -78,38 +55,35 @@ export const FridgeView: React.FC = () => {
 
     addFridgeItem({
       name: name.trim(),
-      category,
-      quantity: Number(amount) || 0,
-      unit,
-      notes: notes.trim() || undefined
+      category: selectedCategory,
+      isAvailable: true,
+      note: note.trim() || undefined
     });
 
     setName('');
-    setAmount(1);
-    setNotes('');
+    setNote('');
     setShowAddModal(false);
   };
 
   const handleSendToShopping = (item: FridgeItem) => {
     sendFridgeItemToShopping(item);
-    setFloatingToast(`Added "${item.name} (${item.quantity > 0 ? item.quantity : 1} ${item.unit})" to your To-Buy list!`);
+    setFloatingToast(`Added "${item.name}${item.note ? ` (${item.note})` : ''}" to your To-Buy list!`);
     setTimeout(() => setFloatingToast(null), 3000);
   };
 
-  const getCategoryBadgeColor = (cat: FoodCategory) => {
+  const getCategoryLabel = (cat: FoodCategory) => {
     switch (cat) {
-      case 'Protein': return 'bg-rose-50 text-rose-700 border-rose-200';
-      case 'Carbs': return 'bg-amber-50 text-amber-800 border-amber-200';
-      case 'Greens': return 'bg-emerald-50 text-emerald-800 border-emerald-200';
-      case 'Dairy': return 'bg-blue-50 text-blue-700 border-blue-200';
-      case 'Condiments & Seasonings': return 'bg-purple-50 text-purple-700 border-purple-200';
-      case 'Fruits & Others': return 'bg-orange-50 text-orange-700 border-orange-200';
-      default: return 'bg-slate-100 text-slate-700 border-slate-200';
+      case 'Protein': return '🥩 Protein';
+      case 'Carbs': return '🍚 Carbs';
+      case 'Greens': return '🥦 Greens';
+      case 'Dairy': return '🥛 Dairy';
+      case 'Condiments & Seasonings': return '🧂 Seasonings';
+      case 'Fruits & Others': return '🍎 Fruits';
     }
   };
 
   return (
-    <div className="space-y-4 relative">
+    <div className="space-y-5 relative">
       {/* FLOATING TOAST NOTIFICATION */}
       {floatingToast && (
         <div className="fixed bottom-6 right-6 z-50 animate-bounce sm:animate-none transition-all">
@@ -128,27 +102,28 @@ export const FridgeView: React.FC = () => {
         </div>
       )}
 
-      {/* Inline Category Filters & Add Item Button Row */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+      {/* Category Tabs & Add Item Row */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white p-3.5 rounded-2xl border border-slate-200 shadow-sm">
         <div className="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0">
           {categories.map(cat => {
-            const count = categoryCounts[cat] || 0;
+            const { inStock, total } = getCategoryCount(cat);
             const isSelected = selectedCategory === cat;
+
             return (
               <button
                 key={cat}
                 onClick={() => setSelectedCategory(cat)}
-                className={`text-xs px-3.5 py-2 rounded-xl font-medium whitespace-nowrap transition flex items-center gap-1.5 ${
+                className={`text-xs px-3.5 py-2 rounded-xl font-semibold whitespace-nowrap transition flex items-center gap-1.5 ${
                   isSelected
                     ? 'bg-slate-900 text-white shadow-sm'
-                    : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-50'
+                    : 'bg-slate-50 text-slate-600 hover:bg-slate-100 hover:text-slate-900'
                 }`}
               >
-                <span>{cat === 'Protein' ? '🥩 Protein' : cat === 'Carbs' ? '🍚 Carbs' : cat === 'Greens' ? '🥦 Greens' : cat === 'Dairy' ? '🥛 Dairy' : cat === 'Condiments & Seasonings' ? '🧂 Seasonings' : cat === 'Fruits & Others' ? '🍎 Fruits' : 'All Items'}</span>
-                <span className={`text-[11px] px-1.5 py-0.2 rounded-full font-bold ${
-                  isSelected ? 'bg-slate-700 text-white' : 'bg-slate-100 text-slate-600'
+                <span>{getCategoryLabel(cat)}</span>
+                <span className={`text-[10px] px-1.5 py-0.2 rounded-full font-bold ${
+                  isSelected ? 'bg-slate-700 text-white' : 'bg-slate-200 text-slate-600'
                 }`}>
-                  {count}
+                  {inStock}/{total}
                 </span>
               </button>
             );
@@ -159,217 +134,150 @@ export const FridgeView: React.FC = () => {
           onClick={() => setShowAddModal(true)}
           className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-semibold flex items-center gap-1.5 shadow-sm self-start sm:self-auto shrink-0 transition"
         >
-          <Plus className="w-4 h-4" /> Add Item
+          <Plus className="w-4 h-4" /> Add {selectedCategory} Item
         </button>
       </div>
 
-      {/* MAIN INVENTORY TABLE */}
-      <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm">
-        <div className="overflow-x-auto">
-          <table className="w-full text-left text-xs table-fixed">
-            <thead className="bg-slate-50 border-b border-slate-200 text-slate-500 uppercase tracking-wider text-[11px] font-bold">
-              <tr>
-                <th className="py-3.5 px-5 w-[38%]">Item Name</th>
-                <th className="py-3.5 px-4 w-[18%]">Category</th>
-                <th className="py-3.5 px-4 w-[30%]">Quantity & Unit</th>
-                <th className="py-3.5 px-5 w-[14%] text-right">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-100">
-              {filteredItems.map(item => {
-                const isOutOfStock = item.quantity === 0;
-
-                return (
-                  <tr 
-                    key={item.id} 
-                    className={`transition group ${isOutOfStock ? 'bg-rose-50/30' : 'hover:bg-slate-50/70'}`}
+      {/* VISUAL CARDS GRID ("Masih Punya" Experience) */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        {filteredItems.map(item => {
+          return (
+            <div
+              key={item.id}
+              className={`p-4 rounded-2xl border transition-all duration-200 flex flex-col justify-between ${
+                item.isAvailable
+                  ? 'bg-white border-emerald-200/90 shadow-sm ring-1 ring-emerald-100 hover:shadow-md'
+                  : 'bg-slate-50/80 border-slate-200 border-dashed opacity-80 hover:opacity-100'
+              }`}
+            >
+              <div>
+                {/* Card Header: 1-Click Presence Status & Delete */}
+                <div className="flex items-center justify-between gap-2 mb-3">
+                  <button
+                    onClick={() => toggleItemAvailability(item.id)}
+                    className={`px-2.5 py-1 rounded-full text-xs font-bold flex items-center gap-1.5 transition shadow-2xs ${
+                      item.isAvailable
+                        ? 'bg-emerald-50 text-emerald-800 border border-emerald-200 hover:bg-emerald-100'
+                        : 'bg-rose-50 text-rose-700 border border-rose-200 hover:bg-rose-100'
+                    }`}
+                    title="Click to toggle: Masih Ada ↔ Udah Abis"
                   >
-                    {/* Item Name */}
-                    <td className="py-3 px-5 font-semibold text-slate-900">
-                      <div>
-                        <span className={`text-sm ${isOutOfStock ? 'text-rose-900 font-bold' : 'text-slate-900'}`}>
-                          {item.name}
-                        </span>
-                        {item.notes && (
-                          <p className="text-[11px] font-normal text-slate-400 mt-0.5">{item.notes}</p>
-                        )}
-                      </div>
-                    </td>
+                    {item.isAvailable ? (
+                      <>
+                        <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                        <span>Masih Ada</span>
+                      </>
+                    ) : (
+                      <>
+                        <XCircle className="w-3.5 h-3.5 text-rose-500 shrink-0" />
+                        <span>Udah Abis</span>
+                      </>
+                    )}
+                  </button>
 
-                    {/* Category */}
-                    <td className="py-3 px-4">
-                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-md text-[11px] font-semibold border ${getCategoryBadgeColor(item.category)}`}>
-                        {item.category}
-                      </span>
-                    </td>
+                  <button
+                    onClick={() => deleteFridgeItem(item.id)}
+                    className="p-1 text-slate-300 hover:text-rose-500 transition rounded-lg"
+                    title="Remove item"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
+                  </button>
+                </div>
 
-                    {/* Directly Editable Quantity & Unit */}
-                    <td className="py-3 px-4">
-                      <div className="flex items-center gap-2">
-                        {/* Stepper & Number Input */}
-                        <div className="flex items-center rounded-lg border border-slate-200 bg-white overflow-hidden shadow-2xs">
-                          <button
-                            type="button"
-                            onClick={() => updateFridgeQuantity(item.id, Math.max(0, item.quantity - 1))}
-                            className="px-2 py-1.5 text-slate-500 hover:text-slate-800 hover:bg-slate-100 transition"
-                            title="Decrease quantity"
-                          >
-                            <Minus className="w-3 h-3" />
-                          </button>
+                {/* Item Name */}
+                <h4 
+                  onClick={() => toggleItemAvailability(item.id)}
+                  className={`font-bold text-base cursor-pointer select-none leading-snug transition ${
+                    item.isAvailable 
+                      ? 'text-slate-900' 
+                      : 'text-slate-400 line-through'
+                  }`}
+                  title="Click to toggle status"
+                >
+                  {item.name}
+                </h4>
 
-                          <input
-                            type="number"
-                            min="0"
-                            step="any"
-                            value={item.quantity}
-                            onChange={(e) => updateFridgeQuantity(item.id, Number(e.target.value) || 0)}
-                            className={`w-14 text-center text-xs font-bold py-1 focus:outline-none ${
-                              isOutOfStock ? 'text-rose-600 bg-rose-50/50' : 'text-slate-800'
-                            }`}
-                          />
+                {/* Optional Sisa / Detail Note (Directly Editable) */}
+                <div className="mt-2.5 flex items-center gap-1.5">
+                  <Edit2 className="w-3 h-3 text-slate-300 shrink-0" />
+                  <input
+                    type="text"
+                    value={item.note || ''}
+                    onChange={(e) => updateItemNote(item.id, e.target.value)}
+                    placeholder="Sisa / detail (opsional)..."
+                    className="w-full text-xs text-slate-600 placeholder-slate-300 bg-transparent border-b border-transparent hover:border-slate-200 focus:border-emerald-500 focus:outline-none transition py-0.5"
+                  />
+                </div>
+              </div>
 
-                          <button
-                            type="button"
-                            onClick={() => updateFridgeQuantity(item.id, item.quantity + 1)}
-                            className="px-2 py-1.5 text-slate-500 hover:text-slate-800 hover:bg-slate-100 transition"
-                            title="Increase quantity"
-                          >
-                            <Plus className="w-3 h-3" />
-                          </button>
-                        </div>
+              {/* Bottom Actions */}
+              <div className="mt-4 pt-3 border-t border-slate-100">
+                {!item.isAvailable ? (
+                  <button
+                    onClick={() => handleSendToShopping(item)}
+                    className="w-full py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 shadow-sm transition"
+                  >
+                    <ShoppingCart className="w-3.5 h-3.5" />
+                    <span>+ Beli / To-Buy</span>
+                  </button>
+                ) : (
+                  <div className="flex items-center justify-between text-[11px] text-slate-400">
+                    <span>Di kulkas / stok siap</span>
+                    <button
+                      onClick={() => handleSendToShopping(item)}
+                      className="text-slate-400 hover:text-emerald-700 font-medium flex items-center gap-1"
+                      title="Add to shopping list anyway"
+                    >
+                      <ShoppingCart className="w-3 h-3" /> Beli lagi
+                    </button>
+                  </div>
+                )}
+              </div>
+            </div>
+          );
+        })}
 
-                        {/* Unit Selection Dropdown (Fixed per item but editable) */}
-                        <select
-                          value={item.unit}
-                          onChange={(e) => updateFridgeUnit(item.id, e.target.value as FoodUnit)}
-                          className="text-xs font-semibold px-2 py-1.5 bg-slate-100/90 hover:bg-slate-200 text-slate-700 border border-slate-200 rounded-lg cursor-pointer focus:outline-none"
-                        >
-                          {availableUnits.map(u => (
-                            <option key={u} value={u}>{u}</option>
-                          ))}
-                        </select>
-
-                        {isOutOfStock && (
-                          <span className="text-[10px] font-bold text-rose-600 uppercase tracking-wide bg-rose-100 px-1.5 py-0.5 rounded">
-                            Empty
-                          </span>
-                        )}
-                      </div>
-                    </td>
-
-                    {/* Actions */}
-                    <td className="py-3 px-5 text-right">
-                      <div className="flex items-center justify-end gap-2">
-                        <button
-                          onClick={() => handleSendToShopping(item)}
-                          className="px-3 py-1.5 text-xs font-semibold text-emerald-800 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 rounded-lg transition flex items-center gap-1.5 shadow-2xs"
-                          title="Add this item to To-Buy list"
-                        >
-                          <ShoppingCart className="w-3.5 h-3.5 text-emerald-600" />
-                          <span>+ To-Buy</span>
-                        </button>
-
-                        <button
-                          onClick={() => deleteFridgeItem(item.id)}
-                          className="p-1.5 text-slate-300 hover:text-rose-600 rounded-lg transition"
-                          title="Delete item"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                );
-              })}
-
-              {filteredItems.length === 0 && (
-                <tr>
-                  <td colSpan={4} className="py-12 text-center text-slate-400">
-                    <AlertCircle className="w-8 h-8 mx-auto text-slate-300 mb-2" />
-                    <p className="text-sm">No items found matching "{selectedCategory}".</p>
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
+        {filteredItems.length === 0 && (
+          <div className="col-span-full py-16 text-center text-slate-400 bg-white rounded-2xl border border-slate-200">
+            <p className="text-sm font-semibold text-slate-600">Belum ada item di kategori {selectedCategory}.</p>
+            <p className="text-xs text-slate-400 mt-1">Klik tombol "+ Add {selectedCategory} Item" di atas untuk menambahkan.</p>
+          </div>
+        )}
       </div>
 
       {/* Add Item Modal */}
       {showAddModal && (
         <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <form onSubmit={handleCreateItem} className="bg-white rounded-2xl max-w-md w-full p-6 shadow-xl border border-slate-200">
+          <form onSubmit={handleCreateItem} className="bg-white rounded-2xl max-w-sm w-full p-6 shadow-xl border border-slate-200">
             <div className="flex items-center justify-between pb-3 border-b border-slate-100 mb-4">
-              <h4 className="font-bold text-slate-800">Add Stock Item</h4>
+              <h4 className="font-bold text-slate-800">Tambah {selectedCategory}</h4>
               <button type="button" onClick={() => setShowAddModal(false)} className="p-1 text-slate-400 hover:text-slate-600">
                 <X className="w-5 h-5" />
               </button>
             </div>
 
-            <div className="space-y-3">
+            <div className="space-y-3.5">
               <div>
-                <label className="text-xs font-semibold text-slate-700 block mb-1">Item Name *</label>
+                <label className="text-xs font-semibold text-slate-700 block mb-1">Nama Makanan / Bahan *</label>
                 <input
                   type="text"
                   required
+                  autoFocus
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  className="w-full text-sm px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:border-emerald-500"
-                  placeholder="e.g. Telur Ayam, Daging Sapi, Beras"
+                  className="w-full text-sm px-3.5 py-2.5 border border-slate-300 rounded-xl focus:outline-none focus:border-emerald-500"
+                  placeholder="e.g. Dori Fillet, Tempe, Keju"
                 />
               </div>
 
               <div>
-                <label className="text-xs font-semibold text-slate-700 block mb-1">Category</label>
-                <select
-                  value={category}
-                  onChange={(e) => setCategory(e.target.value as FoodCategory)}
-                  className="w-full text-xs px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:border-emerald-500"
-                >
-                  <option value="Protein">🥩 Protein</option>
-                  <option value="Carbs">🍚 Carbs</option>
-                  <option value="Greens">🥦 Greens</option>
-                  <option value="Dairy">🥛 Dairy</option>
-                  <option value="Condiments & Seasonings">🧂 Condiments & Seasonings</option>
-                  <option value="Fruits & Others">🍎 Fruits & Others</option>
-                </select>
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="text-xs font-semibold text-slate-700 block mb-1">Quantity Amount</label>
-                  <input
-                    type="number"
-                    min="0"
-                    step="any"
-                    value={amount}
-                    onChange={(e) => setAmount(Number(e.target.value))}
-                    className="w-full text-xs px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:border-emerald-500"
-                  />
-                </div>
-
-                <div>
-                  <label className="text-xs font-semibold text-slate-700 block mb-1">Unit of Measurement</label>
-                  <select
-                    value={unit}
-                    onChange={(e) => setUnit(e.target.value as FoodUnit)}
-                    className="w-full text-xs px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:border-emerald-500"
-                  >
-                    {availableUnits.map(u => (
-                      <option key={u} value={u}>{u}</option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-
-              <div>
-                <label className="text-xs font-semibold text-slate-700 block mb-1">Notes (Optional)</label>
-                <textarea
-                  rows={2}
-                  value={notes}
-                  onChange={(e) => setNotes(e.target.value)}
-                  placeholder="e.g. Preferred brand, storage tip"
-                  className="w-full text-xs px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:border-emerald-500"
+                <label className="text-xs font-semibold text-slate-700 block mb-1">Catatan Sisa / Detail (Opsional)</label>
+                <input
+                  type="text"
+                  value={note}
+                  onChange={(e) => setNote(e.target.value)}
+                  placeholder="e.g. sisa 2 pcs, 1 pack di freezer"
+                  className="w-full text-xs px-3.5 py-2.5 border border-slate-300 rounded-xl focus:outline-none focus:border-emerald-500"
                 />
               </div>
 
@@ -377,15 +285,15 @@ export const FridgeView: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => setShowAddModal(false)}
-                  className="px-4 py-2 border border-slate-200 text-slate-600 rounded-lg text-xs font-medium hover:bg-slate-50"
+                  className="px-4 py-2 border border-slate-200 text-slate-600 rounded-xl text-xs font-medium hover:bg-slate-50"
                 >
-                  Cancel
+                  Batal
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-semibold"
+                  className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-semibold"
                 >
-                  Save Item
+                  Simpan
                 </button>
               </div>
             </div>

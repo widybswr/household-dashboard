@@ -53,36 +53,44 @@ export const initialRecipes: Recipe[] = [
 
 export const initialFridgeItems: FridgeItem[] = [
   // Protein
-  { id: 'f1', name: 'Telur Ayam Omega', category: 'Protein', quantity: 10, unit: 'pcs / butir', notes: 'Superindo pack' },
-  { id: 'f2', name: 'Ayam Dada Fillet', category: 'Protein', quantity: 500, unit: 'gram', notes: 'Freezer pack' },
-  { id: 'f3', name: 'Salmon Fillet Fresh', category: 'Protein', quantity: 300, unit: 'gram', notes: 'Wild caught' },
-  { id: 'f4', name: 'Daging Sapi Giling', category: 'Protein', quantity: 0, unit: 'pack', notes: 'Finished / Need for pasta' },
-  { id: 'f5', name: 'Tahu & Tempe Sutra', category: 'Protein', quantity: 2, unit: 'pack' },
+  { id: 'f1', name: 'Telur Ayam', category: 'Protein', isAvailable: true, note: '10 butir' },
+  { id: 'f2', name: 'Ayam Dada Fillet', category: 'Protein', isAvailable: true, note: 'sisa 1 pack di freezer' },
+  { id: 'f3', name: 'Salmon Fillet', category: 'Protein', isAvailable: true },
+  { id: 'f4', name: 'Daging Sapi Giling', category: 'Protein', isAvailable: false, note: 'perlu beli untuk pasta' },
+  { id: 'f5', name: 'Tahu & Tempe', category: 'Protein', isAvailable: true },
+  { id: 'f6', name: 'Dori Fillet', category: 'Protein', isAvailable: false },
 
   // Carbs
-  { id: 'f6', name: 'Beras Pandan Wangi', category: 'Carbs', quantity: 5, unit: 'kg' },
-  { id: 'f7', name: 'Roti Tawar Gandum', category: 'Carbs', quantity: 1, unit: 'pack' },
-  { id: 'f8', name: 'Pasta Spaghetti Barilla', category: 'Carbs', quantity: 2, unit: 'box' },
-  { id: 'f9', name: 'Rolled Oats Quaker', category: 'Carbs', quantity: 800, unit: 'gram' },
+  { id: 'f7', name: 'Beras Pandan Wangi', category: 'Carbs', isAvailable: true, note: 'masih banyak' },
+  { id: 'f8', name: 'Roti Gandum', category: 'Carbs', isAvailable: true, note: 'sisa 4 lembar' },
+  { id: 'f9', name: 'Pasta Spaghetti', category: 'Carbs', isAvailable: true },
+  { id: 'f10', name: 'Rolled Oats', category: 'Carbs', isAvailable: true },
+  { id: 'f11', name: 'Kentang', category: 'Carbs', isAvailable: false },
 
   // Greens
-  { id: 'f10', name: 'Brokoli Hijau Segar', category: 'Greens', quantity: 1, unit: 'bonggol' },
-  { id: 'f11', name: 'Wortel Brastagi', category: 'Greens', quantity: 3, unit: 'pcs / butir' },
-  { id: 'f12', name: 'Bayam Jepang (Horenso)', category: 'Greens', quantity: 1, unit: 'ikat' },
+  { id: 'f12', name: 'Brokoli Hijau', category: 'Greens', isAvailable: true, note: '1 bonggol segar' },
+  { id: 'f13', name: 'Wortel', category: 'Greens', isAvailable: true },
+  { id: 'f14', name: 'Bayam Jepang', category: 'Greens', isAvailable: true },
+  { id: 'f15', name: 'Buncis', category: 'Greens', isAvailable: false },
+  { id: 'f16', name: 'Selada / Lettuce', category: 'Greens', isAvailable: false },
 
   // Dairy
-  { id: 'f13', name: 'Susu UHT Full Cream', category: 'Dairy', quantity: 1, unit: 'liter' },
-  { id: 'f14', name: 'Keju Cheddar Kraft', category: 'Dairy', quantity: 0, unit: 'pack', notes: 'Need more for breakfast' },
-  { id: 'f15', name: 'Greek Yogurt Plain', category: 'Dairy', quantity: 500, unit: 'gram' },
+  { id: 'f17', name: 'Susu UHT Full Cream', category: 'Dairy', isAvailable: true, note: '1 kotak' },
+  { id: 'f18', name: 'Keju Cheddar Kraft', category: 'Dairy', isAvailable: false, note: 'abis tadi pagi' },
+  { id: 'f19', name: 'Greek Yogurt', category: 'Dairy', isAvailable: true },
+  { id: 'f20', name: 'Mentega / Butter', category: 'Dairy', isAvailable: true, note: 'Anchor' },
 
   // Condiments & Seasonings
-  { id: 'f16', name: 'Bawang Merah & Putih', category: 'Condiments & Seasonings', quantity: 250, unit: 'gram' },
-  { id: 'f17', name: 'Minyak Goreng 2L', category: 'Condiments & Seasonings', quantity: 2, unit: 'liter' },
-  { id: 'f18', name: 'Saus Teriyaki Kikkoman', category: 'Condiments & Seasonings', quantity: 1, unit: 'bottle' },
+  { id: 'f21', name: 'Bawang Merah & Putih', category: 'Condiments & Seasonings', isAvailable: true, note: 'cukup untuk seminggu' },
+  { id: 'f22', name: 'Minyak Goreng', category: 'Condiments & Seasonings', isAvailable: true },
+  { id: 'f23', name: 'Saus Teriyaki Kikkoman', category: 'Condiments & Seasonings', isAvailable: true },
+  { id: 'f24', name: 'Kecap Manis Bango', category: 'Condiments & Seasonings', isAvailable: true },
+  { id: 'f25', name: 'Saus Sambal ABC', category: 'Condiments & Seasonings', isAvailable: false },
 
   // Fruits & Others
-  { id: 'f19', name: 'Pisang Cavendish', category: 'Fruits & Others', quantity: 1, unit: 'pack' },
-  { id: 'f20', name: 'Apel Fuji', category: 'Fruits & Others', quantity: 4, unit: 'pcs / butir' }
+  { id: 'f26', name: 'Pisang Cavendish', category: 'Fruits & Others', isAvailable: true },
+  { id: 'f27', name: 'Apel Fuji', category: 'Fruits & Others', isAvailable: true, note: '3 pcs' },
+  { id: 'f28', name: 'Alpukat', category: 'Fruits & Others', isAvailable: false }
 ];
 
 export const initialArtTasks: ArtTask[] = [
