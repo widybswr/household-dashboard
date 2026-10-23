@@ -24,6 +24,7 @@ export const FridgeView: React.FC = () => {
   // Strictly category-based: No "All" tab. Defaults to Protein
   const [selectedCategory, setSelectedCategory] = useState<FoodCategory>('Protein');
   const [showAddModal, setShowAddModal] = useState(false);
+  const [itemToDelete, setItemToDelete] = useState<FridgeItem | null>(null);
   const [floatingToast, setFloatingToast] = useState<string | null>(null);
 
   // Add Item Form state
@@ -102,8 +103,8 @@ export const FridgeView: React.FC = () => {
         </div>
       )}
 
-      {/* Category Tabs & Add Item Row */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white p-3.5 rounded-2xl border border-slate-200 shadow-sm">
+      {/* Category Tabs (Add item button removed from here) */}
+      <div className="bg-white p-3.5 rounded-2xl border border-slate-200 shadow-sm">
         <div className="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0">
           {categories.map(cat => {
             const { inStock, total } = getCategoryCount(cat);
@@ -129,16 +130,9 @@ export const FridgeView: React.FC = () => {
             );
           })}
         </div>
-
-        <button
-          onClick={() => setShowAddModal(true)}
-          className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-semibold flex items-center gap-1.5 shadow-sm self-start sm:self-auto shrink-0 transition"
-        >
-          <Plus className="w-4 h-4" /> Add {selectedCategory} Item
-        </button>
       </div>
 
-      {/* VISUAL CARDS GRID ("Masih Punya" Experience) */}
+      {/* VISUAL CARDS GRID */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
         {filteredItems.map(item => {
           return (
@@ -151,7 +145,7 @@ export const FridgeView: React.FC = () => {
               }`}
             >
               <div>
-                {/* Card Header: 1-Click Presence Status & Delete */}
+                {/* Card Header: 1-Click Presence Status (Trash icon removed from header) */}
                 <div className="flex items-center justify-between gap-2 mb-3">
                   <button
                     onClick={() => toggleItemAvailability(item.id)}
@@ -173,14 +167,6 @@ export const FridgeView: React.FC = () => {
                         <span>Udah Abis</span>
                       </>
                     )}
-                  </button>
-
-                  <button
-                    onClick={() => deleteFridgeItem(item.id)}
-                    className="p-1 text-slate-300 hover:text-rose-500 transition rounded-lg"
-                    title="Remove item"
-                  >
-                    <Trash2 className="w-3.5 h-3.5" />
                   </button>
                 </div>
 
@@ -210,25 +196,42 @@ export const FridgeView: React.FC = () => {
                 </div>
               </div>
 
-              {/* Bottom Actions */}
+              {/* Bottom Actions: Delete replaces "di kulkas / siap stok" */}
               <div className="mt-4 pt-3 border-t border-slate-100">
                 {!item.isAvailable ? (
-                  <button
-                    onClick={() => handleSendToShopping(item)}
-                    className="w-full py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 shadow-sm transition"
-                  >
-                    <ShoppingCart className="w-3.5 h-3.5" />
-                    <span>+ Beli / To-Buy</span>
-                  </button>
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => setItemToDelete(item)}
+                      className="p-2 text-slate-400 hover:text-rose-600 rounded-xl hover:bg-rose-50 transition"
+                      title="Hapus item"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                    <button
+                      onClick={() => handleSendToShopping(item)}
+                      className="flex-1 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 shadow-sm transition"
+                    >
+                      <ShoppingCart className="w-3.5 h-3.5" />
+                      <span>+ Beli / To-Buy</span>
+                    </button>
+                  </div>
                 ) : (
-                  <div className="flex items-center justify-between text-[11px] text-slate-400">
-                    <span>Di kulkas / stok siap</span>
+                  <div className="flex items-center justify-between text-xs">
+                    <button
+                      onClick={() => setItemToDelete(item)}
+                      className="text-slate-400 hover:text-rose-600 transition flex items-center gap-1 font-medium"
+                      title="Hapus item"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                      <span>Hapus</span>
+                    </button>
                     <button
                       onClick={() => handleSendToShopping(item)}
                       className="text-slate-400 hover:text-emerald-700 font-medium flex items-center gap-1"
                       title="Add to shopping list anyway"
                     >
-                      <ShoppingCart className="w-3 h-3" /> Beli lagi
+                      <ShoppingCart className="w-3 h-3" />
+                      <span>+ To-Buy</span>
                     </button>
                   </div>
                 )}
@@ -237,13 +240,58 @@ export const FridgeView: React.FC = () => {
           );
         })}
 
-        {filteredItems.length === 0 && (
-          <div className="col-span-full py-16 text-center text-slate-400 bg-white rounded-2xl border border-slate-200">
-            <p className="text-sm font-semibold text-slate-600">Belum ada item di kategori {selectedCategory}.</p>
-            <p className="text-xs text-slate-400 mt-1">Klik tombol "+ Add {selectedCategory} Item" di atas untuk menambahkan.</p>
+        {/* MUTED GREEN ADD NEW ITEM CARD (At the bottom of the grid) */}
+        <div
+          onClick={() => setShowAddModal(true)}
+          className="border-2 border-dashed border-emerald-300/80 bg-emerald-50/40 hover:bg-emerald-50 text-emerald-800 rounded-2xl p-6 flex flex-col items-center justify-center min-h-[160px] cursor-pointer transition shadow-2xs hover:shadow-sm group text-center"
+        >
+          <div className="w-10 h-10 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center group-hover:scale-110 transition mb-2 shadow-2xs">
+            <Plus className="w-5 h-5" />
           </div>
-        )}
+          <p className="font-bold text-sm text-emerald-900">+ Tambah {selectedCategory}</p>
+          <p className="text-[11px] text-emerald-600/90 mt-0.5">Klik untuk tambah stok baru</p>
+        </div>
       </div>
+
+      {/* CONFIRM DELETE MODAL */}
+      {itemToDelete && (
+        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl max-w-sm w-full p-6 shadow-xl border border-slate-200">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-100 mb-4">
+              <h4 className="font-bold text-slate-800 text-base">Hapus Item Stok</h4>
+              <button onClick={() => setItemToDelete(null)} className="p-1 text-slate-400 hover:text-slate-600">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <p className="text-xs text-slate-600 leading-relaxed">
+              Apakah kamu yakin ingin menghapus <strong className="text-slate-900">{itemToDelete.name}</strong> dari daftar stok {itemToDelete.category}?
+            </p>
+
+            <div className="flex justify-end gap-2 pt-5">
+              <button
+                type="button"
+                onClick={() => setItemToDelete(null)}
+                className="px-4 py-2 border border-slate-200 text-slate-600 rounded-xl text-xs font-semibold hover:bg-slate-50 transition"
+              >
+                Batal
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  deleteFridgeItem(itemToDelete.id);
+                  setFloatingToast(`Item "${itemToDelete.name}" telah dihapus.`);
+                  setItemToDelete(null);
+                  setTimeout(() => setFloatingToast(null), 3000);
+                }}
+                className="px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-xs font-semibold shadow-sm transition"
+              >
+                Ya, Hapus
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Add Item Modal */}
       {showAddModal && (
