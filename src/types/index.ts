@@ -29,9 +29,10 @@ export interface Recipe {
   id: string;
   title: string;
   cuisine: CuisineType;
-  cookTimeMins: number;
+  cookTimeMins?: number;
   ingredients: string[];
-  tags: string[];
+  tags?: string[];
+  notes?: string;
 }
 
 export type FoodCategory = 

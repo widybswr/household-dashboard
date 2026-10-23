@@ -8,7 +8,7 @@ export const Header: React.FC = () => {
   const getTitle = () => {
     switch (activeTab) {
       case 'dashboard': return 'Household Hub';
-      case 'meals': return 'Weekly Meal Planner & Recipes';
+      case 'meals': return 'Meal Ideas & Recipes';
       case 'fridge': return 'Pantry & Food Stocks';
       case 'art': return 'ART Routine & Recurring Chores';
       case 'bills': return 'Monthly Bills & Payment Dates';

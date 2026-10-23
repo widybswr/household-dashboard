@@ -33,7 +33,7 @@ export const Sidebar: React.FC = () => {
 
   const navItems: { id: TabType; label: string; icon: React.ReactNode; badge?: number }[] = [
     { id: 'dashboard', label: 'Overview', icon: <LayoutDashboard className="w-5 h-5" /> },
-    { id: 'meals', label: 'Meal Planner', icon: <UtensilsCrossed className="w-5 h-5" /> },
+    { id: 'meals', label: 'Meal Ideas', icon: <UtensilsCrossed className="w-5 h-5" /> },
     { id: 'fridge', label: 'Food Stock', icon: <Package className="w-5 h-5" />, badge: emptyStockCount > 0 ? emptyStockCount : undefined },
     { id: 'art', label: 'ART & Chores', icon: <Sparkles className="w-5 h-5" />, badge: dueChores },
     { id: 'bills', label: 'Bills & Payments', icon: <CreditCard className="w-5 h-5" />, badge: pendingBills },

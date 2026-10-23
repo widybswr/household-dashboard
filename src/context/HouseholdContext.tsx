@@ -32,6 +32,8 @@ interface HouseholdContextType {
   recipes: Recipe[];
   updateMeal: (id: string, title: string, notes?: string) => void;
   addRecipe: (recipe: Omit<Recipe, 'id'>) => void;
+  updateRecipe: (id: string, updates: Partial<Recipe>) => void;
+  deleteRecipe: (id: string) => void;
   assignRecipeToMeal: (recipeTitle: string, day: MealPlanItem['day'], mealType: MealPlanItem['mealType']) => void;
 
   // Fridge
@@ -148,6 +150,14 @@ export const HouseholdProvider: React.FC<{ children: React.ReactNode }> = ({ chi
   const addRecipe = (recipe: Omit<Recipe, 'id'>) => {
     const newRecipe: Recipe = { ...recipe, id: 'r_' + Date.now() };
     setRecipes(prev => [newRecipe, ...prev]);
+  };
+
+  const updateRecipe = (id: string, updates: Partial<Recipe>) => {
+    setRecipes(prev => prev.map(r => r.id === id ? { ...r, ...updates } : r));
+  };
+
+  const deleteRecipe = (id: string) => {
+    setRecipes(prev => prev.filter(r => r.id !== id));
   };
 
   const assignRecipeToMeal = (recipeTitle: string, day: MealPlanItem['day'], mealType: MealPlanItem['mealType']) => {
@@ -281,6 +291,8 @@ export const HouseholdProvider: React.FC<{ children: React.ReactNode }> = ({ chi
         recipes,
         updateMeal,
         addRecipe,
+        updateRecipe,
+        deleteRecipe,
         assignRecipeToMeal,
         fridgeItems,
         addFridgeItem,
